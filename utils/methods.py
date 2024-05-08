@@ -1,3 +1,8 @@
+# import cairosvg
+from io import BytesIO
+import re
+import xml.etree.ElementTree as svg
+
 def hexToDec(hex_color):
     decimal_color = int(hex_color[1:], 16)
     return decimal_color
@@ -19,3 +24,20 @@ def compareColors(hex_color1, hex_color2):
     """
 
     return rgbDistance(hex_color1, hex_color2) > 128
+
+
+def fillCountry(src: str, color: str, ids: list[int], png = False):
+    with open(src) as _basedata:
+        content = _basedata.read()
+        items = content.split('\n')
+    
+    newItems = []
+    
+    for id in ids:
+        for item in items:
+            if item.startswith(f'<path id="c{id}"') or item.startswith(f'<g id="c{id}"'):
+                newItems.append(item.replace('fill="#6CAF54"', f'fill="{color}"'))
+            else:
+                newItems.append(item)
+
+    return '\n'.join(newItems)
