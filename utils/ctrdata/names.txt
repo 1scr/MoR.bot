@@ -9,7 +9,6 @@ Italie
 Pays-Bas
 Belgique
 Suisse
-Islande
 Danemark
 Norvège
 Suède
@@ -26,12 +25,8 @@ Hongrie
 Slovaquie
 République Tchèque
 Autruche
-Slovénie
-Croatie
-Bosnie-Herzégovie
-Monténégro
-Serbie
-Albanie
+République d'Istrie
+Union Balkanique
 Grèce
 Bulgarie
 Turquie
@@ -39,3 +34,4 @@ Tunisie
 Algérie
 Maroc
 Luxembourg
+États-Unis
