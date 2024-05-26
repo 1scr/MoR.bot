@@ -1,7 +1,9 @@
-# import cairosvg
+# from cairosvg import svg2png
 from io import BytesIO
 import re
 import xml.etree.ElementTree as svg
+
+import discord
 
 def hexToDec(hex_color):
     decimal_color = int(hex_color[1:], 16)
@@ -26,7 +28,7 @@ def compareColors(hex_color1, hex_color2):
     return rgbDistance(hex_color1, hex_color2) > 128
 
 
-def fillCountry(src: str, color: str, ids: list[int], png = False):
+def fillCountry(src: str, color: str, ids: list[int]):
     with open(src) as _basedata:
         content = _basedata.read()
         items = content.split('\n')
@@ -39,5 +41,27 @@ def fillCountry(src: str, color: str, ids: list[int], png = False):
                 newItems.append(item.replace('fill="#6CAF54"', f'fill="{color}"'))
             else:
                 newItems.append(item)
+    
+    return '\n'.join(newItems)
+
+def editCount(src: str, text: str, id: int):
+    with open(src) as _basedata:
+        content = _basedata.read()
+        items = content.split('\n')
+    
+    newItems = []
+    
+    for item in items:
+        if item.startswith(f'<text id="n{id}"'):
+            newItems.append(item.replace(f'>{id}<', f'>{id} ({text})<'))
+        else:
+            newItems.append(item)
 
     return '\n'.join(newItems)
+
+"""
+def getAttachmentFromSvg(data: str, name: str = 'image') -> discord.File:
+    pngdata = BytesIO(svg2png(data))
+
+    return discord.File(pngdata, filename = f'{name}.png')
+"""
