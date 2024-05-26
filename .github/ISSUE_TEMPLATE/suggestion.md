@@ -1,7 +1,7 @@
 ---
 name: Suggestion
 about: Suggérer quelque chose à ajouter au bot
-title: ''
+title: "[Feature Request]"
 labels: 'enhancement, good first issue, PRIORITY: I'
 assignees: okayhappex
 
