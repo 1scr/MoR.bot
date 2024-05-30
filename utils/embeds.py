@@ -72,6 +72,13 @@ class TeamEmbeds:
 
 		return discord.Embed(title = title, description = description, colour = color)
 	
+	def invalidName(self, name: str) -> discord.Embed:
+		title = f"{failEmoji} Impossible de prendre ce nom"
+		description = f"Le nom de votre équipe doit comprendre moins de 32 caractères."
+		color = discord.Colour.brand_red()
+
+		return discord.Embed(title = title, description = description, colour = color)
+	
 	def invalidColor(self, color: str) -> discord.Embed:
 		title = f"{failEmoji} Impossible de prendre cette couleur"
 		description = f"Votre couleur `{color}` est invalide car elle ne correspond pas au format hexadécimal: `0xABCDEF` ou `#ABCDEF`"
