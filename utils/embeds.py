@@ -7,7 +7,7 @@ failEmoji = "<:fail:1244217624276238398>"
 
 def errorEmbed(ticket: str) -> discord.Embed:
 	title = "Une erreur est survenue..."
-	description = f"""Mais pas de panique ! Les développeurs ont été informés en détail et répareront ça en un rien de temps ! Si ils tardent, mentionne-les cet identifiant:\n
+	description = f"""Mais pas de panique ! Les développeurs ont été informés en détail et répareront ça en un rien de temps ! Si ils tardent, mentionne-les avec cet identifiant:\n
 	```
 	{ticket}```"""
 	color = discord.Colour.brand_red()
