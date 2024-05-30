@@ -93,7 +93,7 @@ class Game:
 
 		tm = Team()
 		tm.name = 'Neutre'
-		tm.color = '#6CAF54'
+		tm.color = '0x6CAF54'
 
 		i = 0
 		for ctr in ctrinfo:
