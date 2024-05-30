@@ -24,7 +24,7 @@ def noPermEmbed() -> discord.Embed:
 class MatchEmbeds:
     # -------------------- SUCCÈS --------------------
 
-    def gameCreatedEmbed(self) -> discord.Embed:
+    def gameCreated(self) -> discord.Embed:
         title = f"{infoEmoji} Bienvenue dans cette partie de World War III !"
         description = f"""
         Vous avez 36 pays à votre disposition. La première équipe a en coloniser 20 gagne la partie (la Russie vous donne accès à toutes ses colonies)\n
@@ -69,6 +69,13 @@ class TeamEmbeds:
         title = f"{failEmoji} Impossible de prendre cette couleur"
         description = f"Votre couleur se rapproche trop de celle d'une équipe déjà existante."
         color = discord.Colour(int(color, 16))
+
+        return discord.Embed(title = title, description = description, colour = color)
+    
+    def invalidColor(color: str) -> discord.Embed:
+        title = f"{failEmoji} Impossible de prendre cette couleur"
+        description = f"Votre couleur `{color}` est invalide car elle ne correspond pas au format hexadécimal: `0xABCDEF` ou `#ABCDEF`"
+        color = discord.Colour.brand_red()
 
         return discord.Embed(title = title, description = description, colour = color)
     
