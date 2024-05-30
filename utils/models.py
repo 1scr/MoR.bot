@@ -109,6 +109,12 @@ class Game:
         
         self.teams.append(tm)
 
+    class Player:
+        def __init__(self, id: int):
+            self.id = id
+            self.team: Team | None = None
+            self.score = 0 # À venir
+
     class ConquestResponse:
         def __init__(self):
             self.oldchief = 0
@@ -181,6 +187,18 @@ class Game:
                 return country
         
         return None
+    
+    def fetch_player(self, id: int) -> Player | None:
+        pl = self.Player(id)
+
+        for team in self.teams:
+            if id in team.members:
+                pl.team = team
+                break
+        else:
+            pl = None
+        
+        return pl
     
     def _convert(self) -> dict:
         data = {}
