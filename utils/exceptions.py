@@ -1,3 +1,7 @@
+"""
+Ces exceptions serviront simplement pour du debug
+"""
+
 # Families
 
 class NoFamilyError(Exception):
@@ -23,18 +27,6 @@ class NoMissileError(Exception):
     def __init__(self, message):
         super().__init__(message)
 
-class NoCarError(Exception):
-    def __init__(self, message) -> None:
-        super().__init__(message)
-
-class NoMedkitError(Exception):
-    def __init__(self, message):
-        super().__init__(message)
-
-class NoBombError(Exception):
-    def __init__(self, message) -> None:
-        super().__init__(message)
-
-class UnknownItemError(Exception):
+class NoPlaneError(Exception):
     def __init__(self, message) -> None:
         super().__init__(message)
