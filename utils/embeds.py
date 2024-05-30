@@ -88,7 +88,7 @@ class TeamEmbeds:
 		**Couleur:** `{color}`\n
 		**Chef:** <@{author}>
 		"""
-		color = discord.Colour.brand_red()
+		color = discord.Colour.brand_green()
 
 		return discord.Embed(title = title, description = description, colour = color)
 
