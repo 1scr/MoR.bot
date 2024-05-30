@@ -51,28 +51,28 @@ class MatchEmbeds:
 class TeamEmbeds:
 	# -------------------- ERREURS --------------------
 
-	def alreadyInTeam(teamName: str) -> discord.Embed:
+	def alreadyInTeam(self, teamName: str) -> discord.Embed:
 		title = f"{failEmoji} Vous devez quitter votre équipe"
 		description = f"Il vous faut quitter l'équipe _{teamName}_ pour en rejoindre ou en créer une autre."
 		color = discord.Colour.dark_red()
 
 		return discord.Embed(title = title, description = description, colour = color)
 	
-	def alreadyExistingName(teamName: str) -> discord.Embed:
+	def alreadyExistingName(self, teamName: str) -> discord.Embed:
 		title = f"{failEmoji} L'équipe _{teamName}_ existe déjà"
 		description = f"Choisissez un autre nom ou arrangez-vous avec le chef de l'autre équipe pour la rejoindre."
 		color = discord.Colour.dark_red()
 
 		return discord.Embed(title = title, description = description, colour = color)
 	
-	def alreadyExistingColor(color: str) -> discord.Embed:
+	def alreadyExistingColor(self, color: str) -> discord.Embed:
 		title = f"{failEmoji} Impossible de prendre cette couleur"
 		description = f"Votre couleur se rapproche trop de celle d'une équipe déjà existante."
 		color = discord.Colour(int(color, 16))
 
 		return discord.Embed(title = title, description = description, colour = color)
 	
-	def invalidColor(color: str) -> discord.Embed:
+	def invalidColor(self, color: str) -> discord.Embed:
 		title = f"{failEmoji} Impossible de prendre cette couleur"
 		description = f"Votre couleur `{color}` est invalide car elle ne correspond pas au format hexadécimal: `0xABCDEF` ou `#ABCDEF`"
 		color = discord.Colour.brand_red()
@@ -81,7 +81,7 @@ class TeamEmbeds:
 	
 	# -------------------- SUCCÈS --------------------
 
-	def teamCreated(name: str, color: str, author: int) -> discord.Embed:
+	def teamCreated(self, name: str, color: str, author: int) -> discord.Embed:
 		title = f"{successEmoji} Équipe créée avec succès !"
 		description = f"""
 		**Nom de l'équipe:** {name}\n
