@@ -41,12 +41,22 @@ class Team:
 		self.color: str = "#000000"
 		self.countries: list[int] = []
 		self.members: list[int] = [ 0 ]
+		self.invites: list[int] = []
 		self.chief: int = 0
+	
+	def _load(self, data: dict):
+		self.name = data.get('name', self.name)
+		self.color = data.get('color', self.color)
+		self.countries = data.get('countries', self.countries)
+		self.members = [ int(id) for id in data.get('members', self.members) ]
+		self.invites = [ int(id) for id in data.get('invites', self.invites) ]
+		self.chief = int(data.get('chief', self.chief))
 	
 	def _convert(self) -> dict:
 		data = self.__dict__
 		data['chief'] = str(self.chief)
 		data['members'] = [ str(id) for id in self.members ]
+		data['invites'] = [ str(id) for id in self.invites ]
 
 		return data
 
@@ -78,8 +88,19 @@ class Country:
 		
 		return losses
 
+	def _load(self, data: dict):
+		self.name = data.get('name', self.name)
+		self.team = data.get('team', self.team)
+		self.chief = int(data.get('chief', self.chief))
+		self.units = [ int(id) for id in data.get('units', self.units) ]
+		self.missiles = data.get('missiles', self.missiles)
+		self.boost = data.get('boost', self.boost)
+		self.isSpawner = data.get('isSpawner', self.isSpawner)
+
 	def _convert(self) -> dict:
 		data = self.__dict__
+
+		data['units'] = [ str(unit) for unit in data ('units') ]
 
 		return data
 	
@@ -200,6 +221,25 @@ class Game:
 		
 		return pl
 	
+	def _load(self, data: dict):
+		self.id = data.get('key', self.id)
+		self.lastrefresh = data.get('lastRefresh', self.lastrefresh)
+		self.privacy = data.get('privacy', self.privacy)
+
+		if data.get('teams', None) is not None:
+			for team in data['teams']:
+				tm = Team()
+				tm._load(team)
+
+				self.teams.append(tm)
+		
+		if data.get('countries', None) is not None:
+			for country in data['countries']:
+				ctr = Country()
+				ctr._load(country)
+
+				self.countries.append(ctr)
+
 	def _convert(self) -> dict:
 		data = {}
 
