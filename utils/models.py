@@ -1,13 +1,23 @@
 import math
+import os
 import random
 import time
 
+from deta import Deta
+
+deta = Deta(os.getenv('DBKEY'))
+games = deta.Base('games')
+ldb = deta.Base('leaderboard')
+
 def startctr() -> list[dict]:
+    """
+    Génération des pays dans leur état premier (défini dans /utils/ctrdata)
+    """
     data = []
 
     with open('./utils/ctrdata/attributes.txt') as _data:
         for ctr in _data.read().split('\n'):
-            data.append(dict(zip(['difficulty', 'startnb'], [ int(ctr.split(' ')[0]), int(ctr.split(' ')[1]) ])))
+            data.append(dict(zip(['difficulty', 'startnb', 'isSpawner'], [ int(ctr.split(' ')[0]), int(ctr.split(' ')[1]), bool(int(ctr.split(' ')[2])) ])))
         
     with open('./utils/ctrdata/names.txt', encoding = 'UTF-8') as _file:
         names = _file.read().split('\n')
@@ -48,6 +58,7 @@ class Country:
         self.units: list[int] = random.randint(5, 10) * [ 0 ]
         self.missiles: int = 0
         self.boost = 1
+        self.isSpawner = False
 
     def get_id(self) -> int:
         i = 0
@@ -78,6 +89,7 @@ class Game:
         self.countries: list[Country] = []
         self.teams: list[Team] = []
         self.lastrefresh: int = 0
+        self.privacy = False
 
         tm = Team()
         tm.name = 'Neutre'
@@ -88,6 +100,7 @@ class Game:
             country = Country(ctr['name'])
             country.units = ctr['startnb'] * [ 0 ]
             country.boost = ctr['difficulty']
+            country.isSpawner = ctr['isSpawner']
 
             self.countries.append(country)
             tm.countries.append(i)
@@ -102,8 +115,12 @@ class Game:
             self.losses = 0
             self.score = 0
             self.won = False
+            self.rewards: dict = {'planes': 0, 'missiles': 0}
 
     def conquest(self, _from: Country, target: Country, attackers: int) -> ConquestResponse:
+        """
+        Fonction de conquête d'un pays. 40% de chances pour une victoire, 30% pour une défaite, 30% de match nul (à soldats égaux)
+        """
         cqr = self.ConquestResponse()
         cqr.oldchief = target.chief
         author = self.fetch_team(_from.team)
@@ -127,7 +144,14 @@ class Game:
             target.team = author.name
             target.chief = author.chief
             target.units =  attackers * [ round(time.time()) ]
-            _from.units += math.ceil(base / 5) * [ 0 ] # On offre 20% de soldats tous neufs à l'attaquant
+            _from.units += math.ceil(base / (5 if target.boost == 1 else 2 if target.boost == 2 else 1.25)) * [ 0 ] # On offre un pourcentage de soldats tous neufs à l'attaquant
+            
+            if target.boost == 2:
+                cqr.rewards['planes'] += random.randint(0, 2)
+                cqr.rewards['missilers'] += random.randint(0, 1)
+            elif target.boost == 3:
+                cqr.rewards['planes'] += random.randint(3, 6)
+                cqr.rewards['missiles'] += random.randint(1, 3)
 
             cqr.won = True
         else:
@@ -139,11 +163,10 @@ class Game:
         for country in ctrinfo:
             add = 0
             ctr = self.fetch_country(country['name'])
-            if len(ctr.units) > (1000 * country['difficulty']) / 7:
+            if len(ctr.units) < (1000 * country['difficulty']) / 7:
                 add = country['difficulty'] ** 2
 
             ctr.units += add * [ 0 ] 
-            ctr.missiles += country['difficulty'] // 5
 
     def fetch_team(self, name: str = '', color: str = '', chief: int = 0) -> Team | None:
         for team in self.teams:
@@ -162,8 +185,12 @@ class Game:
     def _convert(self) -> dict:
         data = {}
 
-        data['id'] = str(self.id)
+        data = self.__dict__
+        del data['id']
         data['teams'] = [ team._convert() for team in self.teams ]
         data['countries'] = [ country._convert() for country in self.countries ]
 
         return data
+
+    def save(self) -> None:
+        games.put(key = str(self.id), data = self._convert())
