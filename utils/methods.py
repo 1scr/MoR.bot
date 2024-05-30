@@ -1,17 +1,14 @@
 # from cairosvg import svg2png
-from io import BytesIO
-import re
-import xml.etree.ElementTree as svg
+# from io import BytesIO
+# import xml.etree.ElementTree as svg
 
-import discord
-
-def hexToDec(hex_color):
-    decimal_color = int(hex_color[1:], 16)
+def hexToDec(hex_color: str | int) -> int:
+    decimal_color = int(hex_color, 16)
     return decimal_color
 
-def rgbDistance(hex_color1, hex_color2):
-    color1 = hexToDec(hex_color1)
-    color2 = hexToDec(hex_color2)
+def rgbDistance(clr1: str | int, clr2: str | int) -> int:
+    color1 = hexToDec(clr1)
+    color2 = hexToDec(clr2)
     
     r1, g1, b1 = (color1 >> 16) & 0xFF, (color1 >> 8) & 0xFF, color1 & 0xFF
     r2, g2, b2 = (color2 >> 16) & 0xFF, (color2 >> 8) & 0xFF, color2 & 0xFF
@@ -19,14 +16,6 @@ def rgbDistance(hex_color1, hex_color2):
     distance = ((r1 - r2) ** 2 + (g1 - g2) ** 2 + (b1 - b2) ** 2) ** 0.5
     
     return distance
-
-def compareColors(hex_color1, hex_color2):
-    """
-    L'idée c'est d'utiliser cette fonction pour éviter que les équipes créent des couleurs similaires.
-    """
-
-    return rgbDistance(hex_color1, hex_color2) > 128
-
 
 def fillCountry(src: str, color: str, ids: list[int]):
     with open(src) as _basedata:
