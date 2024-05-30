@@ -96,7 +96,7 @@ async def create(ctx: discord.ApplicationContext, name: str, color: str):
 		team.name = name
 		team.color = color
 		team.chief = ctx.author.id
-		team.members.append(ctx.author.id)
+		team.members = [ ctx.author.id ]
 		
 		game.teams.append(team)
 		game.save()
