@@ -112,6 +112,17 @@ class TeamEmbeds:
 		color = discord.Colour.brand_green()
 
 		return discord.Embed(title = title, description = description, colour = color)
+	
+	def teamJoined(self, name: str, author: int, membercount: int) -> discord.Embed:
+		title = f"{successEmoji} Équipe créée avec succès !"
+		description = f"""
+		**Nom de l'équipe:** {name}\n
+		**Chef:** <@{author}>\n
+		**Membres:** {membercount}
+		"""
+		color = discord.Colour.brand_green()
+
+		return discord.Embed(title = title, description = description, colour = color)
 
 
 mm = MatchEmbeds()
