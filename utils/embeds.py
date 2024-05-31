@@ -51,17 +51,24 @@ class MatchEmbeds:
 class TeamEmbeds:
 	# -------------------- ERREURS --------------------
 
+	def teamNotFound(self, teamName: str) -> discord.Embed:
+		title = f"{failEmoji} Cette équipe n'existe pas"
+		description = f"Impossible de trouver une équipe nommée « {teamName} » - Réessayez."
+		color = discord.Colour.brand_red()
+
+		return discord.Embed(title = title, description = description, colour = color)
+
 	def alreadyInTeam(self, teamName: str) -> discord.Embed:
 		title = f"{failEmoji} Vous devez quitter votre équipe"
 		description = f"Il vous faut quitter l'équipe _{teamName}_ pour en rejoindre ou en créer une autre."
-		color = discord.Colour.dark_red()
+		color = discord.Colour.brand_red()
 
 		return discord.Embed(title = title, description = description, colour = color)
 	
 	def alreadyExistingName(self, teamName: str) -> discord.Embed:
 		title = f"{failEmoji} L'équipe _{teamName}_ existe déjà"
 		description = f"Choisissez un autre nom ou arrangez-vous avec le chef de l'autre équipe pour la rejoindre."
-		color = discord.Colour.dark_red()
+		color = discord.Colour.brand_red()
 
 		return discord.Embed(title = title, description = description, colour = color)
 	
