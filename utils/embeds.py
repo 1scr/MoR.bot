@@ -93,6 +93,13 @@ class TeamEmbeds:
 
 		return discord.Embed(title = title, description = description, colour = color)
 	
+	def notInvited(self, author: int) -> discord.Embed:
+		title = f"{failEmoji} Vous n'êtes pas invité(e) dans cette équipe"
+		description = f"Demandez à <@{author}> de vous ivitez dans son équipe pour pouvoir la rejoindre."
+		color = discord.Colour.dark_red()
+
+		return discord.Embed(title = title, description = description, colour = color)
+	
 	# -------------------- SUCCÈS --------------------
 
 	def teamCreated(self, name: str, color: str, author: int) -> discord.Embed:
