@@ -193,7 +193,7 @@ class Game:
 			if len(ctr.units) < (1000 * country['difficulty']) / 7:
 				add = country['difficulty'] ** 2
 
-			ctr.units += add * [ 0 ] 
+			ctr.units += (add // 2) * [ 0 ]
 
 	def fetch_team(self, name: str = None, color: str = None, chief: int = None) -> Team | None:
 		for team in self.teams:
@@ -251,4 +251,8 @@ class Game:
 		return data
 
 	def save(self) -> None:
+		if time.time() - self.lastrefresh >= 1800:
+			self.refresh()
+			self.lastrefresh = round(time.time())
+
 		games.put(key = str(self.id), data = self._convert())
