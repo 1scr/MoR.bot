@@ -58,7 +58,7 @@ async def start(ctx: discord.ApplicationContext, private: bool | None = False):
 			await ctx.send_response(embed = embeds.noPermEmbed())
 	except Exception as e: 
 		ticket = str(round(ctx.author.id / time.time()))
-		crashes.put(key = ticket, data = {'author': ctx.author.display_name, 'command': 'send', 'data': str(e), 'args': {'private': private }})
+		crashes.put(key = ticket, data = {'author': ctx.author.display_name, 'command': 'send', 'data': str(e), 'args': {'private': private }, 'traceback': e.with_traceback()})
 		await ctx.send(embed = embeds.errorEmbed(ticket))
 
 @fml.command(name = 'create')
@@ -123,7 +123,7 @@ async def create(ctx: discord.ApplicationContext, name: str, color: str):
 		await ctx.send_response(embed = embeds.tm.teamCreated(name, color, ctx.author.id))
 	except Exception as e:
 		ticket = str(round(ctx.author.id / time.time()))
-		crashes.put(key = ticket, data = {'author': ctx.author.display_name, 'command': 'team create', 'data': str(e), 'args': {'name': name, 'color': color }})
+		crashes.put(key = ticket, data = {'author': ctx.author.display_name, 'command': 'team create', 'data': str(e), 'args': {'name': name, 'color': color }, 'traceback': e.with_traceback()})
 		await ctx.send(embed = embeds.errorEmbed(ticket))
 
 @fml.command(name = 'join')
@@ -162,7 +162,7 @@ async def join(ctx: discord.ApplicationContext, name: str):
 			await ctx.send_response(embed = embeds.tm.teamJoined(team.name, team.chief, len(team.members)))
 	except Exception as e:
 		ticket = str(round(ctx.author.id / time.time()))
-		crashes.put(key = ticket, data = {'author': ctx.author.display_name, 'command': 'team join', 'data': str(e), 'args': {'name': name }})
+		crashes.put(key = ticket, data = {'author': ctx.author.display_name, 'command': 'team join', 'data': str(e), 'args': {'name': name }, 'traceback': e.with_traceback()})
 		await ctx.send(embed = embeds.errorEmbed(ticket))
 
 bot.run(os.getenv('TOKEN'))
