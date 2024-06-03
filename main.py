@@ -25,6 +25,18 @@ games = deta.Base('games')
 ldb = deta.Base('leaderboard')
 crashes = deta.Base('crashes')
 
+def load_game(id: int) -> models.Game:
+	game = models.Game(id)
+	load = games.get(str(id))
+
+	if load is None:
+		game._load({})
+	else:
+		game._load(load)
+
+	return game
+
+
 @bot.event
 async def on_ready():
 	print(f'\033[32mConnecté en tant que \033[1m{bot.user.display_name}\033[0m')
@@ -73,7 +85,13 @@ async def create(ctx: discord.ApplicationContext, name: str, color: str):
 			await ctx.send_response(embed = embeds.tm.invalidColor(color))
 			return
 		
-		game: models.Game = models.Game(ctx.guild.id)
+		# On vérifie que la longueur du nom soit inférieure à 32 caractères
+		if len(name) > 32:
+			await ctx.send_response(embed = embeds.tm.invalidName(name))
+			return
+		
+		# On commence à chercher la partie
+		game: models.Game = load_game(ctx.guild.id)
 
 		# On vérifie que le nom et la couleur ne soient pas similaires à ceux d'une autre équipe
 		for team in game.teams:
@@ -97,14 +115,54 @@ async def create(ctx: discord.ApplicationContext, name: str, color: str):
 		team.color = color
 		team.chief = ctx.author.id
 		team.members = [ ctx.author.id ]
+		team.invites = []
 		
 		game.teams.append(team)
 		game.save()
 
-		await ctx.send_response(embed = embeds.tm.teamCreated(name, int(color, 16), ctx.author.id))
+		await ctx.send_response(embed = embeds.tm.teamCreated(name, color, ctx.author.id))
 	except Exception as e:
 		ticket = str(round(ctx.author.id / time.time()))
-		crashes.put(key = ticket, data = {'author': ctx.author.display_name, 'command': 'team create', 'data': str(e), 'args': {'color': color }})
+		crashes.put(key = ticket, data = {'author': ctx.author.display_name, 'command': 'team create', 'data': str(e), 'args': {'name': name, 'color': color }})
 		await ctx.send(embed = embeds.errorEmbed(ticket))
 
-bot.run(os.getenv('DEVTOKEN'))
+@fml.command(name = 'join')
+async def join(ctx: discord.ApplicationContext, name: str):
+	"""
+	Commande permettant de rejoindre une équipe. Elle fonction si ces conditions sont remplies:
+		- Le joueur n'est présent dans aucune autre équipe
+		- Il y est invité
+	"""
+
+	try:
+		game: models.Game = load_game(ctx.guild.id)
+
+		# Vérification de l'appartenance à une autre équipe
+		player = game.fetch_player(ctx.author.id)
+		if player is not None: # Le fetch renvoie None si le joueur n'est présent dans aucune équipe.
+			await ctx.send_response(embed = embeds.tm.alreadyInTeam(player.team.name))
+			return
+		
+		# On vérifie si l'équipe existe
+		team = game.fetch_team(name)
+		if team is None:
+			await ctx.send_response(embed = embeds.tm.teamNotFound(name))
+			return
+		
+		# On vérifie s'il est invité sinon c'est ciao
+		if ctx.author.id not in team.invites:
+			await ctx.send_response(embed = embeds.tm.notInvited(team.chief))
+		else:
+			if ctx.author.id not in team.members: # Normalement condition toujours vraie car sinon "alreadyInTeam"
+				team.members.append(ctx.author.id)
+
+			team.invites.remove(ctx.author.id) # On supprime son invitation -> il peut pas revenir si il se fait kick
+			game.save()
+
+			await ctx.send_response(embed = embeds.tm.teamJoined(team.name, team.chief, len(team.members)))
+	except Exception as e:
+		ticket = str(round(ctx.author.id / time.time()))
+		crashes.put(key = ticket, data = {'author': ctx.author.display_name, 'command': 'team join', 'data': str(e), 'args': {'name': name }})
+		await ctx.send(embed = embeds.errorEmbed(ticket))
+
+bot.run(os.getenv('TOKEN'))
