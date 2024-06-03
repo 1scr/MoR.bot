@@ -165,4 +165,39 @@ async def join(ctx: discord.ApplicationContext, name: str):
 		crashes.put(key = ticket, data = {'author': ctx.author.display_name, 'command': 'team join', 'data': str(e), 'args': {'name': name }, 'traceback': e.with_traceback(None)})
 		await ctx.send(embed = embeds.errorEmbed(ticket))
 
+@fml.command(name = 'invite')
+async def invite(ctx: discord.ApplicationContext, member: discord.User):
+	"""
+	Commande permettant au chef d'une équipe d'y inviter un membre
+	"""
+
+	try:
+		game: models.Game = load_game(ctx.guild.id)
+
+		# On vérifie s'il est chef d'équipe
+		player = game.fetch_player(ctx.author.id)
+		if player is None or player.team.chief != player.id: # Le fetch renvoie None si le joueur n'est présent dans aucune équipe.
+			await ctx.send_response(embed = embeds.tm.notInAnyTeam())
+			return
+		
+		team = player.team
+		
+		# On envoie l'invitation si elle n'est pas déjà envoyée
+		sent = False # Elle nous servira à savoir si l'invit a été envoyée par DM
+
+		if member.id not in team.invites:
+			team.invites.append(member.id)
+			if member.can_send():
+				await member.send(embed = embeds.info.invite(team.name, team.chief, len(team.members), ctx.guild.name))
+				sent = True
+		
+		# On répond poliement
+		await ctx.send_response(embed = embeds.tm.memberInvited(member.name), ephemeral = True)
+		if not sent:
+			await ctx.channel.send.send(member.mention, embed = embeds.info.invite(team.name, team.chief, len(team.members), ctx.guild.name))
+	except Exception as e:
+		ticket = str(round(ctx.author.id / time.time()))
+		crashes.put(key = ticket, data = {'author': ctx.author.display_name, 'command': 'team invite', 'data': str(e), 'args': {'member': member.id }, 'traceback': e.with_traceback(None)})
+		await ctx.send(embed = embeds.errorEmbed(ticket))
+
 bot.run(os.getenv('TOKEN'))
