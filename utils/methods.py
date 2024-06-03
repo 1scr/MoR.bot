@@ -26,7 +26,7 @@ def fillCountry(src: str, color: str, ids: list[int]):
 	
 	for id in ids:
 		for item in items:
-			if item.startswith(f'<path id="c{id}"') or item.startswith(f'<g id="c{id}"'):
+			if f'id="c{id}"' in item:
 				newItems.append(item.replace('fill="#6CAF54"', f'fill="{color}"'))
 			else:
 				newItems.append(item)
