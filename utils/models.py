@@ -100,7 +100,7 @@ class Country:
 	def _convert(self) -> dict:
 		data = self.__dict__
 
-		data['units'] = [ str(unit) for unit in data ('units') ]
+		data['units'] = [ str(unit) for unit in data['units'] ]
 
 		return data
 	
