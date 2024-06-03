@@ -108,7 +108,7 @@ class TeamEmbeds:
 		**Nom de l'équipe:** {name}\n
 		**Couleur:** `{color}`\n
 		**Chef:** <@{author}>
-		"""
+		""".replace('\t', '')
 		color = discord.Colour.brand_green()
 
 		return discord.Embed(title = title, description = description, colour = color)
@@ -119,7 +119,7 @@ class TeamEmbeds:
 		**Nom de l'équipe:** {name}\n
 		**Chef:** <@{author}>\n
 		**Membres:** {membercount}
-		"""
+		""".replace('\t', '')
 		color = discord.Colour.brand_green()
 
 		return discord.Embed(title = title, description = description, colour = color)
