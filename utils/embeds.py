@@ -58,9 +58,9 @@ class TeamEmbeds:
 
 		return discord.Embed(title = title, description = description, colour = color)
 	
-	def notInAnyTeam(self, teamName: str) -> discord.Embed:
+	def notInAnyTeam(self) -> discord.Embed:
 		title = f"{failEmoji} Impossible d'inviter le membre"
-		description = f"Vous n'êtes chef d'aucune équipe dans cette partie."
+		description = "Vous n'êtes chef d'aucune équipe dans cette partie."
 		color = discord.Colour.brand_red()
 
 		return discord.Embed(title = title, description = description, colour = color)
