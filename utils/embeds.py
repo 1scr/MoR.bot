@@ -131,6 +131,13 @@ class TeamEmbeds:
 
 		return discord.Embed(title = title, description = description, colour = color)
 	
+	def memberInvited(self, name: str) -> discord.Embed:
+		title = f"{successEmoji} Joueur invité avec succès !"
+		description = f"{name} vient de recevoir l'invitation dans ses DM, iel peut rejoindre l'équipe à tout moment."
+		color = discord.Colour.brand_green()
+
+		return discord.Embed(title = title, description = description, colour = color)
+	
 class InfoEmbeds:
 	def invite(self, name: str, author: int, membercount: int, servername: str) -> discord.Embed:
 		title = f"{infoEmoji} Vous avez été invité dans une équipe sur {servername}"
