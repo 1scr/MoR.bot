@@ -121,7 +121,7 @@ class TeamEmbeds:
 		return discord.Embed(title = title, description = description, colour = color)
 	
 	def teamJoined(self, name: str, author: int, membercount: int) -> discord.Embed:
-		title = f"{successEmoji} Équipe créée avec succès !"
+		title = f"{successEmoji} Équipe rejointe avec succès !"
 		description = f"""
 		**Nom de l'équipe:** {name}\n
 		**Chef:** <@{author}>\n
