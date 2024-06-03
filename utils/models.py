@@ -195,7 +195,7 @@ class Game:
 
 			ctr.units += add * [ 0 ] 
 
-	def fetch_team(self, name: str = '', color: str = '', chief: int = 0) -> Team | None:
+	def fetch_team(self, name: str = None, color: str = None, chief: int = None) -> Team | None:
 		for team in self.teams:
 			if team.name == name or team.color == color or team.chief == chief:
 				return team
