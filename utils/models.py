@@ -235,7 +235,7 @@ class Game:
 		
 		if data.get('countries', None) is not None:
 			for country in data['countries']:
-				ctr = Country()
+				ctr = Country(country['name'])
 				ctr._load(country)
 
 				self.countries.append(ctr)
