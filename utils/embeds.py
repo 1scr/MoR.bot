@@ -130,7 +130,20 @@ class TeamEmbeds:
 		color = discord.Colour.brand_green()
 
 		return discord.Embed(title = title, description = description, colour = color)
+	
+class InfoEmbeds:
+	def invite(self, name: str, author: int, membercount: int, servername: str) -> discord.Embed:
+		title = f"{infoEmoji} Vous avez été invité dans une équipe sur {servername}"
+		description = f"""
+		**Nom de l'équipe:** {name}\n
+		**Chef:** <@{author}>\n
+		**Membres:** {membercount}
+		""".replace('\t', '')
+		color = discord.Colour.blurple()
+
+		return discord.Embed(title = title, description = description, colour = color)
 
 
 mm = MatchEmbeds()
 tm = TeamEmbeds()
+info = InfoEmbeds()
