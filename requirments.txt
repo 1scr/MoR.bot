@@ -1,0 +1,11 @@
+# Basic
+python-dotenv
+pillow
+
+# Stuff for svg to png
+svg2png
+cairosvg
+
+# Discord bot
+py-cord
+audioop-lts

@@ -1,203 +1,45 @@
 import os
 import dotenv
-import time
 
-from deta import Deta
 import discord
-
-import utils.models as models
-import utils.embeds as embeds
-import utils.methods as methods
-import utils.exceptions as exc
 
 dotenv.load_dotenv()
 
+from bot.cogs import units, minimap
+
 # On initialise le bot
-bot = discord.Bot()
+intents = discord.Intents.default()
+bot = discord.Bot(intents = intents)
 
-# Groupes de commandes
-mng = bot.create_group('war', 'Commandes pour gérer la partie')
-fml = bot.create_group('family', 'Commandes pour gérer votre clan')
+# On charge les cogs
+bot.load_extension('bot.cogs.matchmaking') # Partie et règles du jeu
+bot.load_extension('bot.cogs.minimap') # Map et pays
+bot.load_extension('bot.cogs.teams') # Équipes
+bot.load_extension('bot.cogs.units') # Unités (déplacements)
 
-# Bases
-deta = Deta(os.getenv('DBKEY'))
-games = deta.Base('games')
-ldb = deta.Base('leaderboard')
-crashes = deta.Base('crashes')
-
-def load_game(id: int) -> models.Game:
-	game = models.Game(id)
-	load = games.get(str(id))
-
-	if load is None:
-		game._load({})
-	else:
-		game._load(load)
-
-	return game
-
-
+# Et c'est parti
 @bot.event
 async def on_ready():
 	print(f'\033[32mConnecté en tant que \033[1m{bot.user.display_name}\033[0m')
 
-@mng.command(name = 'start')
-@discord.default_permissions(manage_events=True)
-async def start(ctx: discord.ApplicationContext, private: bool | None = False):
-	try:
-		if ctx.author.id == 1116248453127876618:
-			game: models.Game = models.Game(ctx.guild.id)
-			game.privacy = private
-			game.lastrefresh = round(time.time())
-			game.refresh()
-			game.save()
+@bot.event
+async def on_message(message: discord.Message) -> None:
+	if message.author.bot:
+		return
 
-			await ctx.send_response("Vous jouez en mode privé, vous êtes donc invisibles dans le classement et aucune de vos données (hormis les erreurs) ne seront collectées." if private else "Vous jouez publiquement, les équipes et leurs noms seront donc visibles depuis n'importe quel serveur.", ephemeral = True)
-			await ctx.send_followup(embed = embeds.mm.gameCreated())
-		else:
-			await ctx.send_response(embed = embeds.noPermEmbed())
-	except Exception as e: 
-		ticket = str(round(ctx.author.id / time.time()))
-		crashes.put(key = ticket, data = {'author': ctx.author.display_name, 'command': 'send', 'data': str(e), 'args': {'private': private }, 'traceback': e.with_traceback(None)})
-		await ctx.send(embed = embeds.errorEmbed(ticket))
+	if ' ' in message.content:
+		cmd = message.content.split(' ')
+	else:
+		cmd = [ message.content ]
 
-@fml.command(name = 'create')
-async def create(ctx: discord.ApplicationContext, name: str, color: str):
-	"""
-	Commande permettant de créer une équipe. Celle-ci fonctionne si ces 3 conditions sont remplies:
-		- L'auteur ne fait partie d'aucune équipe
-		- La couleur de l'équipe est au format hexadécimal
-		- Le nom et la couleur ne sont pas similaires à ceux d'une autre équipe
-
-	Args:
-		- name (str): Le nom de l'équipe, utilisé durant toute la partie
-		- color (str): Couleur de l'équipe, utilisée durant toute la partie
-
-	Returns:
-		- discord.Embed: Embed de confirmation si les conditions sont remplies, sinon embed d'erreur
-	"""
-
-	try:
-		# On vérifie déjà si la couleur est bien hexadécimale (on sait jamais avec eux)
+	if cmd[0] in ('move', 'mv') and len(cmd) == 4:
 		try:
-			color: str = color.replace('#', '0x')
+			cmd[1:] = map(int, cmd[1:])
+
+			await units.Units(bot).move_units(message, cmd[1], cmd[2], cmd[3])
 		except:
-			await ctx.send_response(embed = embeds.tm.invalidColor(color))
-			return
-		
-		# On vérifie que la longueur du nom soit inférieure à 32 caractères
-		if len(name) > 32:
-			await ctx.send_response(embed = embeds.tm.invalidName(name))
-			return
-		
-		# On commence à chercher la partie
-		game: models.Game = load_game(ctx.guild.id)
-
-		# On vérifie que le nom et la couleur ne soient pas similaires à ceux d'une autre équipe
-		for team in game.teams:
-			if name.replace(' ', '') == team.name.replace(' ', ''): # On évitera plusieurs noms d'équipe qui diffèrent d'un ou plusieurs espaces seulement
-				await ctx.send_response(embed = embeds.tm.alreadyExistingName(name))
-				return
-			elif methods.rgbDistance(color, team.color) <= 128:
-				await ctx.send_response(embed = embeds.tm.alreadyExistingColor(color))
-				return
-		
-		# Vérification de l'appartenance à une autre équipe
-		player = game.fetch_player(ctx.author.id)
-		if player is not None:
-			await ctx.send_response(embed = embeds.tm.alreadyInTeam(player.team.name))
-			return
-		
-		# Création de l'équipe
-		team: models.Team = models.Team()
-
-		team.name = name
-		team.color = color
-		team.chief = ctx.author.id
-		team.members = [ ctx.author.id ]
-		team.invites = []
-		
-		game.teams.append(team)
-		game.save()
-
-		await ctx.send_response(embed = embeds.tm.teamCreated(name, color, ctx.author.id))
-	except Exception as e:
-		ticket = str(round(ctx.author.id / time.time()))
-		crashes.put(key = ticket, data = {'author': ctx.author.display_name, 'command': 'team create', 'data': str(e), 'args': {'name': name, 'color': color }, 'traceback': e.with_traceback(None)})
-		await ctx.send(embed = embeds.errorEmbed(ticket))
-
-@fml.command(name = 'join')
-async def join(ctx: discord.ApplicationContext, name: str):
-	"""
-	Commande permettant de rejoindre une équipe. Elle fonction si ces conditions sont remplies:
-		- Le joueur n'est présent dans aucune autre équipe
-		- Il y est invité
-	"""
-
-	try:
-		game: models.Game = load_game(ctx.guild.id)
-
-		# Vérification de l'appartenance à une autre équipe
-		player = game.fetch_player(ctx.author.id)
-		if player is not None: # Le fetch renvoie None si le joueur n'est présent dans aucune équipe.
-			await ctx.send_response(embed = embeds.tm.alreadyInTeam(player.team.name))
-			return
-		
-		# On vérifie si l'équipe existe
-		team = game.fetch_team(name)
-		if team is None:
-			await ctx.send_response(embed = embeds.tm.teamNotFound(name))
-			return
-		
-		# On vérifie s'il est invité sinon c'est ciao
-		if ctx.author.id not in team.invites:
-			await ctx.send_response(embed = embeds.tm.notInvited(team.chief))
-		else:
-			if ctx.author.id not in team.members: # Normalement condition toujours vraie car sinon "alreadyInTeam"
-				team.members.append(ctx.author.id)
-
-			team.invites.remove(ctx.author.id) # On supprime son invitation -> il peut pas revenir si il se fait kick
-			game.save()
-
-			await ctx.send_response(embed = embeds.tm.teamJoined(team.name, team.chief, len(team.members)))
-	except Exception as e:
-		ticket = str(round(ctx.author.id / time.time()))
-		crashes.put(key = ticket, data = {'author': ctx.author.display_name, 'command': 'team join', 'data': str(e), 'args': {'name': name }, 'traceback': e.with_traceback(None)})
-		await ctx.send(embed = embeds.errorEmbed(ticket))
-
-@fml.command(name = 'invite')
-async def invite(ctx: discord.ApplicationContext, member: discord.User):
-	"""
-	Commande permettant au chef d'une équipe d'y inviter un membre
-	"""
-
-	try:
-		game: models.Game = load_game(ctx.guild.id)
-
-		# On vérifie s'il est chef d'équipe
-		player = game.fetch_player(ctx.author.id)
-		if player is None or player.team.chief != player.id: # Le fetch renvoie None si le joueur n'est présent dans aucune équipe.
-			await ctx.send_response(embed = embeds.tm.notInAnyTeam())
-			return
-		
-		team = player.team
-		
-		# On envoie l'invitation si elle n'est pas déjà envoyée
-		sent = False # Elle nous servira à savoir si l'invit a été envoyée par DM
-
-		if member.id not in team.invites:
-			team.invites.append(member.id)
-			if member.can_send():
-				await member.send(embed = embeds.info.invite(team.name, team.chief, len(team.members), ctx.guild.name))
-				sent = True
-		
-		# On répond poliement
-		await ctx.send_response(embed = embeds.tm.memberInvited(member.name), ephemeral = True)
-		if not sent:
-			await ctx.channel.send.send(member.mention, embed = embeds.info.invite(team.name, team.chief, len(team.members), ctx.guild.name))
-	except Exception as e:
-		ticket = str(round(ctx.author.id / time.time()))
-		crashes.put(key = ticket, data = {'author': ctx.author.display_name, 'command': 'team invite', 'data': str(e), 'args': {'member': member.id }, 'traceback': e.with_traceback(None)})
-		await ctx.send(embed = embeds.errorEmbed(ticket))
+			await message.reply("Mauvais arguments passés.")
+	elif cmd[0] in ('fmap',):
+		await minimap.MiniMap(bot).display_fastmap(message)
 
 bot.run(os.getenv('TOKEN'))

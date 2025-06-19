@@ -154,5 +154,6 @@ cython_debug/
 # Tests
 
 .local
-test.py
-*.test.py
+tests/
+data/
+logs/

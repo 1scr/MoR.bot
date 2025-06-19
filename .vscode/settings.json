@@ -1,0 +1,22 @@
+{
+	"python.pipenvPath": ".venv\\Scripts\\activate",
+	"editor.tabSize": 4,
+	"editor.insertSpaces": false,
+	"files.autoSave": "onFocusChange",
+	"files.exclude": {
+		"**/__pycache__": true,
+		"**/*.pyc": true,
+		"**/*.pyo": true,
+		"**/.venv": true,
+		"**/.github": true,
+		"**/.local": true
+	},
+	"python.testing.unittestEnabled": true,
+	"python.testing.unittestArgs": [
+		"-v",
+		"-s",
+		"./tests",
+		"-p",
+		"test_*.py"
+	]
+}

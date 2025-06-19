@@ -1,0 +1,398 @@
+{
+	"started": 0,
+	"updated": 0,
+	"refreshed": 0,
+	"open": false,
+	"rules": {
+		"boost": {
+			"enabled": true,
+			"reversed": false
+		},
+		"countriesToWin": 30,
+		"delayAfterMove": 3600,
+		"matchmakingWhilePlaying": false,
+		"refresh": {
+			"rate": 1800,
+			"amountPerCountry": 1
+		}
+	},
+	"teams": [],
+	"countries": {
+		"1": {
+			"name": "Alaska",
+			"units": [
+				[1, 0]
+			],
+			"frontiers": [2, 3, 24],
+			"team": null,
+			"boost": 2
+		},
+		"2": {
+			"name": "Amérique du Nord",
+			"units": [
+				[1, 0]
+			],
+			"frontiers": [1, 3, 4, 5],
+			"team": null,
+			"boost": 1
+		},
+		"3": {
+			"name": "Alberta",
+			"units": [],
+			"frontiers": [1, 2, 4, 7],
+			"team": null,
+			"boost": 1
+		},
+		"4": {
+			"name": "Ontario",
+			"units": [
+				[1, 0]
+			],
+			"frontiers": [2, 3, 5, 6, 7, 8],
+			"team": null,
+			"boost": 1.5
+		},
+		"5": {
+			"name": "Groënland",
+			"units": [
+				[1, 0]
+			],
+			"frontiers": [2, 4, 6, 14],
+			"team": null,
+			"boost": 2
+		},
+		"6": {
+			"name": "Québec",
+			"units": [
+				[2, 0]
+			],
+			"frontiers": [4, 5, 8],
+			"team": null,
+			"boost": 1.5
+		},
+		"7": {
+			"name": "Western USA",
+			"units": [
+				[1, 0]
+			],
+			"frontiers": [3, 4, 8, 9],
+			"team": null,
+			"boost": 1
+		},
+		"8": {
+			"name": "Eastern USA",
+			"units": [
+				[1, 0]
+			],
+			"frontiers": [4, 6, 7, 9],
+			"team": null,
+			"boost": 1
+		},
+		"9": {
+			"name": "Méxique",
+			"units": [
+				[2, 0]
+			],
+			"frontiers": [7, 8, 10],
+			"team": null,
+			"boost": 1.5
+		},
+		"10": {
+			"name": "Venezuela",
+			"units": [
+				[2, 0]
+			],
+			"frontiers": [11, 12],
+			"team": null,
+			"boost": 1.5
+		},
+		"11": {
+			"name": "Pérou",
+			"units": [
+				[1, 0]
+			],
+			"frontiers": [10, 12, 13],
+			"team": null,
+			"boost": 1
+		},
+		"12": {
+			"name": "Brésil",
+			"units": [
+				[1, 0]
+			],
+			"frontiers": [10, 11, 13, 34],
+			"team": null,
+			"boost": 2
+		},
+		"13": {
+			"name": "Argentine",
+			"units": [
+				[1, 0]
+			],
+			"frontiers": [11, 12],
+			"team": null,
+			"boost": 1
+		},
+		"14": {
+			"name": "Islande",
+			"units": [
+				[1, 0]
+			],
+			"frontiers": [5, 15, 16],
+			"team": null,
+			"boost": 2
+		},
+		"15": {
+			"name": "Royaume-Uni",
+			"units": [
+				[1, 0]
+			],
+			"frontiers": [14, 16, 17, 19],
+			"team": null,
+			"boost": 1
+		},
+		"16": {
+			"name": "Scandinavie",
+			"units": [
+				[1, 0]
+			],
+			"frontiers": [14, 15, 19, 20],
+			"team": null,
+			"boost": 1
+		},
+		"17": {
+			"name": "Europe de l'Ouest",
+			"units": [
+				[1, 0]
+			],
+			"frontiers": [16, 18, 19, 34],
+			"team": null,
+			"boost": 1
+		},
+		"18": {
+			"name": "Europe du Sud",
+			"units": [
+				[1, 0]
+			],
+			"frontiers": [17, 19, 20, 32, 33, 34],
+			"team": null,
+			"boost": 2
+		},
+		"19": {
+			"name": "Europe du Nord",
+			"units": [
+				[1, 0]
+			],
+			"frontiers": [15, 16, 17, 18, 19, 20],
+			"team": null,
+			"boost": 1
+		},
+		"20": {
+			"name": "Ukraine",
+			"units": [
+				[1, 0]
+			],
+			"frontiers": [16, 18, 19, 21, 28, 32],
+			"team": null,
+			"boost": 2
+		},
+		"21": {
+			"name": "Ural",
+			"units": [
+				[1, 0]
+			],
+			"frontiers": [20, 22, 28, 29],
+			"team": null,
+			"boost": 1
+		},
+		"22": {
+			"name": "Sibérie",
+			"units": [
+				[1, 0]
+			],
+			"frontiers": [21, 23, 26, 27, 29],
+			"team": null,
+			"boost": 1
+		},
+		"23": {
+			"name": "Yakursk",
+			"units": [
+				[1, 0]
+			],
+			"frontiers": [22, 24, 26],
+			"team": null,
+			"boost": 1
+		},
+		"24": {
+			"name": "Kamchatka",
+			"units": [
+				[2, 0]
+			],
+			"frontiers": [23, 25, 26, 27],
+			"team": null,
+			"boost": 2
+		},
+		"25": {
+			"name": "Japon",
+			"units": [
+				[1, 0]
+			],
+			"frontiers": [24, 27],
+			"team": null,
+			"boost": 1
+		},
+		"26": {
+			"name": "Irkutsk",
+			"units": [
+				[1, 0]
+			],
+			"frontiers": [22, 23, 24, 27],
+			"team": null,
+			"boost": 1
+		},
+		"27": {
+			"name": "Mongolie",
+			"units": [
+				[1, 0]
+			],
+			"frontiers": [22, 24, 25, 26, 29],
+			"team": null,
+			"boost": 1
+		},
+		"28": {
+			"name": "Afghanistan",
+			"units": [
+				[1, 0]
+			],
+			"frontiers": [20, 21, 29, 31, 32],
+			"team": null,
+			"boost": 1
+		},
+		"29": {
+			"name": "Chine",
+			"units": [
+				[1, 0]
+			],
+			"frontiers": [21, 22, 27, 28, 30, 31],
+			"team": null,
+			"boost": 1
+		},
+		"30": {
+			"name": "Siam",
+			"units": [
+				[1, 0]
+			],
+			"frontiers": [29, 31, 39],
+			"team": null,
+			"boost": 1
+		},
+		"31": {
+			"name": "Inde",
+			"units": [
+				[1, 0]
+			],
+			"frontiers": [28, 29, 30, 32],
+			"team": null,
+			"boost": 1
+		},
+		"32": {
+			"name": "Moyen-Orient",
+			"units": [
+				[1, 0]
+			],
+			"frontiers": [18, 20, 28, 31, 33, 35],
+			"team": null,
+			"boost": 3
+		},
+		"33": {
+			"name": "Égypte",
+			"units": [
+				[1, 0]
+			],
+			"frontiers": [18, 32, 34, 35],
+			"team": null,
+			"boost": 1
+		},
+		"34": {
+			"name": "Afrique du Nord",
+			"units": [
+				[1, 0]
+			],
+			"frontiers": [12, 17, 18, 33, 35, 36],
+			"team": null,
+			"boost": 2
+		},
+		"35": {
+			"name": "Afrique de l'Est",
+			"units": [
+				[1, 0]
+			],
+			"frontiers": [32, 33, 34, 36, 37, 38],
+			"team": null,
+			"boost": 3
+		},
+		"36": {
+			"name": "Congo",
+			"units": [
+				[1, 0]
+			],
+			"frontiers": [34, 35, 37],
+			"team": null,
+			"boost": 1
+		},
+		"37": {
+			"name": "Afrique du Sud",
+			"units": [
+				[1, 0]
+			],
+			"frontiers": [35, 36, 38],
+			"team": null,
+			"boost": 1
+		},
+		"38": {
+			"name": "Madagascar",
+			"units": [
+				[1, 0]
+			],
+			"frontiers": [35, 37],
+			"team": null,
+			"boost": 1
+		},
+		"39": {
+			"name": "Indonésie",
+			"units": [
+				[1, 0]
+			],
+			"frontiers": [30, 40, 41],
+			"team": null,
+			"boost": 3
+		},
+		"40": {
+			"name": "Nouvelle-Guinée",
+			"units": [
+				[1, 0]
+			],
+			"frontiers": [39, 41, 42],
+			"team": null,
+			"boost": 1
+		},
+		"41": {
+			"name": "Australie de l'Ouest",
+			"units": [
+				[1, 0]
+			],
+			"frontiers": [39, 41, 42],
+			"team": null,
+			"boost": 1
+		},
+		"42": {
+			"name": "Australie de l'Est",
+			"units": [
+				[1, 0]
+			],
+			"frontiers": [40, 41],
+			"team": null,
+			"boost": 1
+		}
+	}
+}
