@@ -36,7 +36,7 @@ class Matchmaking(commands.Cog):
 	@discord.default_permissions(manage_events = True)
 	async def start_game(self, ctx: discord.ApplicationContext):
 		if ctx.author.guild_permissions.manage_events:
-			game: models.Game = models.Game(ctx.guild.id)
+			game: models.Game = load_game(ctx.guild.id)
 
 			if game.has_started():
 				await ctx.send_response(embed = embeds.mm.gameAlreadyStarted())
@@ -66,7 +66,7 @@ class Matchmaking(commands.Cog):
 	@matchmaking.command(name = 'switch')
 	@discord.default_permissions(manage_events = True)
 	async def switch_state(self, ctx: discord.ApplicationContext, pause: bool | None = None):
-		game: models.Game = models.Game(ctx.guild.id)
+		game: models.Game = load_game(ctx.guild.id)
 
 		if pause is None:
 			game.open = bool(1 - game.open)
