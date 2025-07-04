@@ -1,9 +1,6 @@
 # IMPORTANT: Assurez-vous que ce fichier ne soit pas en train de s'éxécuter si vous avez
 # effectué des changements non sauvegardés !
 
-# Un système de webhook serait plus adapté à ce genre de mise à jour mais les machines sur
-# lesquelles est censé tourner ce script ne sont pas configurées pour recvoir des webhooks
-
 import dotenv
 import os
 import requests
@@ -14,7 +11,7 @@ dotenv.load_dotenv(override = True)
 
 repo_url = "https://raw.githubusercontent.com/1scr/MoR.bot"
 file_paths = [
-	"requirments.txt"
+	"requirments.txt",
 	"main.py",
 	"bot/utils.py",
 	"bot/embeds.py",
@@ -58,6 +55,10 @@ def check_release() -> str | None:
 
 	if response.status_code == 200:
 		releases = response.json()
+
+		if len(releases) == 0:
+			return None
+
 		release = releases[0]
 
 		return release['tag_name']
@@ -65,23 +66,51 @@ def check_release() -> str | None:
 		print(f"Erreur {response.status_code} - Impossible de vérifier la release")
 		return None
 
-while True:
-	print("------------------------------------")
-	print("Recherche de mises à jour...")
-	new_release = check_release()
+botproc = None
 
-	if new_release is not None and new_release != os.getenv('BOT_VERSION'):
-		print(f"Nouvelle mise à jour détectée: {new_release}")
-		update_bot(new_release)
+def launch():
+    global botproc
 
-		os.environ['BOT_VERSION'] = new_release
+    botproc = subprocess.Popen(
+        [".venv/Scripts/python", "main.py"],
+        stdout = None,
+        stderr = None
+    )
 
-		print("\n", "Installation des dépendances...", "\n", sep = '')
-		subprocess.Popen([".venv/Scripts/pip", "install", "-r requirments.txt"])
+def stop():
+    global botproc
 
-		print("\n", "Redémarage en cours...", "\n", sep = '')
-		subprocess.Popen([".venv/Scripts/python", "main.py"])
-	else:
-		print("L'application est à jour.")
+    if botproc and botproc.poll() is None:
+        botproc.terminate()
 
-	time.sleep(300)
+        try:
+            botproc.wait(timeout = 5)
+        except subprocess.TimeoutExpired:
+            botproc.kill()
+
+if __name__ == "__main__":
+	launch()
+
+	while True:
+		print("Recherche de mises à jour...")
+		new_release = check_release()
+
+		if new_release is not None and new_release != os.getenv('BOT_VERSION'):
+			os.system('cls' if os.name == 'nt' else 'clear')
+
+			print(f"Nouvelle mise à jour détectée: {new_release}")
+			update_bot(new_release)
+
+			os.environ['BOT_VERSION'] = new_release
+
+			print("\n", "Installation des dépendances...", "\n", sep = '')
+			subprocess.Popen([".venv/Scripts/pip", "install", "-r", "requirments.txt"])
+
+			print("\n", "Redémarage en cours.", sep = '', end = '')
+			stop()
+			print(".\n")
+			launch()
+		else:
+			print("L'application est à jour.")
+
+		time.sleep(300)
