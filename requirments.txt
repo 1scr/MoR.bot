@@ -1,6 +1,7 @@
 # Basic
 python-dotenv
 pillow
+requests
 
 # Stuff for svg to png
 svg2png
