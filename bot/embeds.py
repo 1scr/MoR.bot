@@ -2,9 +2,9 @@ import discord
 
 from game import models
 
-successEmoji = "<:success:1244217628046921735>"
-infoEmoji = "<:info:1244217625635192883>"
-failEmoji = "<:fail:1244217624276238398>"
+successEmoji = "<:success:1390798534022004806>"
+infoEmoji = "<:info:1390798495627218974>"
+failEmoji = "<:fail:1390798468141944992>"
 
 def noTab(text: str) -> str:
 	return text.replace('    ', '').replace('\t', '')
