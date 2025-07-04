@@ -205,8 +205,8 @@ class Game:
 		except FileNotFoundError:
 			return False
 
-	def __get_data(self) -> dict:
-		if self.__is_registered():
+	def __get_data(self, new: bool = False) -> dict:
+		if self.__is_registered() and not new:
 			with open(f'.local/data/games/{self.id}.json', encoding = 'UTF-8') as _data:
 				return json.loads(_data.read())
 		else:
@@ -352,8 +352,8 @@ class Game:
 		with open(f'.local/data/games/{self.id}.json', 'w', encoding = 'utf-8') as f:
 			json.dump(self.__generate_json(), f, indent = 4, ensure_ascii = False)
 
-	def load(self) -> None:
-		data = self.__get_data()
+	def load(self, new: bool = False) -> None:
+		data = self.__get_data(new)
 
 		self.startDate = data.get('started', self.startDate)
 		self.update = data.get('updated', self.update)

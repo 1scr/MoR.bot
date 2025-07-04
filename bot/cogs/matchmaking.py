@@ -21,6 +21,8 @@ class Matchmaking(commands.Cog):
 	async def prepare_game(self, ctx: discord.ApplicationContext, info_channel: discord.TextChannel):
 		if ctx.author.guild_permissions.manage_events:
 			game: models.Game = models.Game(ctx.guild.id)
+			game.load(new = True)
+
 			game.lastRefresh = round(time.time())
 			game.save()
 
@@ -28,7 +30,7 @@ class Matchmaking(commands.Cog):
 			config.topChannel = info_channel.id
 			config.save()
 
-			await ctx.send_response(embed = embeds.mm.gameCreated(game.rules), ephemeral = True)
+			await ctx.send_response(embed = embeds.mm.gameCreated(game.rules))
 		else:
 			await ctx.send_response(embed = embeds.noPermEmbed())
 
