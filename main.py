@@ -3,19 +3,22 @@ import dotenv
 
 import discord
 
-dotenv.load_dotenv()
+dotenv.load_dotenv(override = True)
 
-from bot.cogs import units, minimap
+from bot.cogs.matchmaking import Matchmaking
+from bot.cogs.minimap import MiniMap
+from bot.cogs.teams import Teams
+from bot.cogs.units import Units
 
 # On initialise le bot
-intents = discord.Intents.default()
+intents = discord.Intents.all()
 bot = discord.Bot(intents = intents)
 
 # On charge les cogs
-bot.load_extension('bot.cogs.matchmaking') # Partie et règles du jeu
-bot.load_extension('bot.cogs.minimap') # Map et pays
-bot.load_extension('bot.cogs.teams') # Équipes
-bot.load_extension('bot.cogs.units') # Unités (déplacements)
+bot.add_cog(Matchmaking(bot))
+bot.add_cog(MiniMap(bot))
+bot.add_cog(Teams(bot))
+bot.add_cog(Units(bot))
 
 # Et c'est parti
 @bot.event
@@ -36,10 +39,10 @@ async def on_message(message: discord.Message) -> None:
 		try:
 			cmd[1:] = map(int, cmd[1:])
 
-			await units.Units(bot).move_units(message, cmd[1], cmd[2], cmd[3])
+			await Units(bot).move_units(message, cmd[1], cmd[2], cmd[3])
 		except:
 			await message.reply("Mauvais arguments passés.")
 	elif cmd[0] in ('fmap',):
-		await minimap.MiniMap(bot).display_fastmap(message)
+		await MiniMap(bot).display_fastmap(message)
 
 bot.run(os.getenv('TOKEN'))
