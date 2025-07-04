@@ -38,7 +38,7 @@ class Matchmaking(commands.Cog):
 		if ctx.author.guild_permissions.manage_events:
 			game: models.Game = models.Game(ctx.guild.id)
 
-			if game.has_started:
+			if game.has_started():
 				await ctx.send_response(embed = embeds.mm.gameAlreadyStarted())
 				return
 
