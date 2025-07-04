@@ -8,6 +8,17 @@ import discord
 
 from game import models
 
+def setenv(key: str, val: str) -> None:
+	with open('.env', 'r') as buffer:
+		lines = buffer.readlines()
+
+	with open('.env', 'w') as buffer:
+		for line in lines:
+			if line.upper().startswith(key.upper() + "="):
+				line = f"{key.upper()}={val}\n"
+
+			buffer.write(line)
+
 COLORS = {
 	"white": 0xffffff,
 	"gray": 0xe5e9f3,
