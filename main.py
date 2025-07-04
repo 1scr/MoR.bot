@@ -23,7 +23,7 @@ bot.add_cog(Units(bot))
 # Et c'est parti
 @bot.event
 async def on_ready():
-	print(f'\033[32mConnecté en tant que \033[1m{bot.user.display_name}\033[0m')
+	print(f"\033[32mConnecté en tant que \033[1m{bot.user.display_name}\033[0m", flush = True)
 
 @bot.event
 async def on_message(message: discord.Message) -> None:

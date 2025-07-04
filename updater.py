@@ -28,7 +28,7 @@ file_paths = [
 
 def update_bot(version: str):
 	for file_path in file_paths:
-		print(f"Mise à jour de {file_path} depuis {repo_url}/{version}/{file_path} ...")
+		print(f"Mise à jour de {file_path} depuis {repo_url}/{version}/{file_path} ...", flush = True)
 		github_url = f"{repo_url}/{version}/{file_path}"
 
 		response = requests.get(github_url, headers = { 'authorization': os.getenv('GITHUB_PAT') })
@@ -42,9 +42,9 @@ def update_bot(version: str):
 					time.sleep(3)
 
 				local_file.write(content)
-				print(f"- {file_path} mis à jour avec succès !")
+				print(f"- {file_path} mis à jour avec succès !", flush = True)
 		else:
-			print(f"- Erreur {response.status_code} - Impossible de mettre à jour {file_path}")
+			print(f"- Erreur {response.status_code} - Impossible de mettre à jour {file_path}", flush = True)
 
 def check_release() -> str | None:
 	response = requests.get(f"https://api.github.com/repos/1scr/MoR.bot/releases", headers = { 'method': 'GET', 'authorization': os.getenv('GITHUB_PAT') })
@@ -59,7 +59,7 @@ def check_release() -> str | None:
 
 		return release['tag_name']
 	else:
-		print(f"Erreur {response.status_code} - Impossible de vérifier la release")
+		print(f"Erreur {response.status_code} - Impossible de vérifier la release", flush = True)
 		return None
 
 botproc = None
@@ -88,25 +88,25 @@ if __name__ == "__main__":
 	launch()
 
 	while True:
-		print("Recherche de mises à jour...")
+		print("Recherche de mises à jour...", flush = True)
 		new_release = check_release()
 
 		if new_release is not None and new_release != os.getenv('BOT_VERSION'):
 			os.system('cls' if os.name == 'nt' else 'clear')
 
-			print(f"Nouvelle mise à jour détectée: {new_release}")
+			print(f"Nouvelle mise à jour détectée: {new_release}", flush = True)
 			update_bot(new_release)
 
 			setenv("BOT_VERSION", new_release)
 
-			print("\n", "Installation des dépendances...", "\n", sep = '')
+			print("\n", "Installation des dépendances...", "\n", sep = '', flush = True)
 			subprocess.Popen([".venv/Scripts/pip", "install", "-r", "requirments.txt"])
 
-			print("\n", "Redémarage en cours.", sep = '', end = '')
+			print("\n", "Redémarage en cours.", sep = '', end = '', flush = True)
 			stop()
 			print(".\n")
 			launch()
 		else:
-			print("L'application est à jour.")
+			print("L'application est à jour.", flush = True)
 
 		time.sleep(300)
