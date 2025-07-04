@@ -33,8 +33,6 @@ def update_bot(version: str):
 
 		if response.status_code == 200:
 			content = response.text
-			if os.path.basename(file_path) == "main.py":
-				content = content.replace('TOKEN', 'TOKEN_DEV')
 
 			with open(file_path, "w", encoding = "utf-8") as local_file:
 				if os.path.basename(file_path) == "main.py":
