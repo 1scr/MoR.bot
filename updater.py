@@ -21,11 +21,7 @@ file_paths = [
 	"bot/cogs/units.py",
 	"game/models.py",
 	"assets/initial_config.json",
-	"assets/initial_game.json",
-	"assets/map_blank.svg",
-	"assets/map_continents.png",
-	"assets/map.png",
-	"assets/map.svg"
+	"assets/initial_game.json"
 ]
 
 def update_bot(version: str):
