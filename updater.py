@@ -7,6 +7,8 @@ import requests
 import subprocess
 import time
 
+from bot.utils import *
+
 dotenv.load_dotenv(override = True)
 
 repo_url = "https://raw.githubusercontent.com/1scr/MoR.bot"
@@ -95,7 +97,7 @@ if __name__ == "__main__":
 			print(f"Nouvelle mise à jour détectée: {new_release}")
 			update_bot(new_release)
 
-			os.environ['BOT_VERSION'] = new_release
+			setenv("BOT_VERSION", new_release)
 
 			print("\n", "Installation des dépendances...", "\n", sep = '')
 			subprocess.Popen([".venv/Scripts/pip", "install", "-r", "requirments.txt"])
