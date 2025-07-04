@@ -10,12 +10,11 @@ from game import models
 
 COLORS = {
 	"white": 0xffffff,
-	"gray": 0xcdddff,
+	"gray": 0xe5e9f3,
 	"grey": 0xbbbbbb,
 	"black": 0x000000,
 	"brown": 0x663300,
-	"ruby": 0xbb0022,
-	"communism": 0xdd0022,
+	"communism": 0xbb0022,
 	"red": 0xee0022,
 	"orange": 0xff551a,
 	"amber": 0xffaa22,
@@ -30,8 +29,6 @@ COLORS = {
 	"indigo": 0x4433ff,
 	"purple": 0x9900ff,
 	"magenta": 0xbb00ff,
-	"pink": 0xff00ff,
-	"rose": 0xff00aa
 }
 
 def load_game(id: int) -> models.Game:
