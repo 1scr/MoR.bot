@@ -122,7 +122,7 @@ class Matchmaking(commands.Cog):
 	async def top_team(self, ctx: discord.ApplicationContext):
 		game: models.Game = load_game(ctx.guild.id)
 
-		top = sorted(game.teams, key = lambda t: len(t.countries))
+		top = sorted(game.teams, key = lambda t: len(t.countries), reverse = True)
 
 		# Embed
 		title = ":trophy: Classement collectif"
