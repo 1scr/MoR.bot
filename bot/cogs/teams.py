@@ -158,7 +158,7 @@ class Teams(commands.Cog):
 		))
 
 	@teams.command(name = 'info')
-	async def info_family(self, ctx: discord.ApplicationContext, name: str):
+	async def team_info(self, ctx: discord.ApplicationContext, name: str):
 		game: models.Game = load_game(ctx.guild.id)
 
 		team = game.get_team(name)
@@ -166,7 +166,11 @@ class Teams(commands.Cog):
 			await ctx.send_response(embed = embeds.tm.teamNotFound(name))
 			return
 
-		await ctx.send_response(team.__dict__)
+		await ctx.send_response(embed = embeds.tm.teamInfos(
+			team,
+			[ ctr for _, ctr in game.countries.items() if ctr.team == team.name ],
+			game.rules
+		))
 
 	@teams.command(name = 'join')
 	async def join_team(self, ctx: discord.ApplicationContext, name: str):

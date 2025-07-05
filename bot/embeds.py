@@ -211,6 +211,26 @@ class TeamEmbeds:
 
 		return discord.Embed(title = title, description = description, color = color)
 
+	# -------------------- INFOS --------------------
+
+	def teamInfos(self, team: models.Team, countries: list[models.Country], gamerules: models.Gamerules) -> discord.Embed:
+		_ctries = '\n'.join([ f"- {country.name}" for country in countries ])
+		_members = '\n'.join([ f"- <@{int(id, 16)}>" for id in team.members.keys() ])
+
+		title = team.name
+		description = f"""
+		**Chef:** <@{team.get_chief().id}>
+
+		### Membres ({len(team.members)})
+		{_members}
+
+		### Pays ({len(countries)}/{gamerules.countriesToWin})
+		{_ctries}
+		""".replace('\t', '')
+		color = discord.Color(team.color)
+
+		return discord.Embed(title = title, description = description, color = color)
+
 class InGameEmbeds:
 	def conquest_response(self, cqr: models.Game.ConquestResponse, ctr: models.Country, amount: int) -> discord.Embed:
 		title = f"{successEmoji} Victoire !" if cqr.won else f"{failEmoji} Défaite"
