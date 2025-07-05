@@ -141,7 +141,7 @@ class Teams(commands.Cog):
 
 
 	@teams.command(name = 'list')
-	async def list_families(self, ctx: discord.ApplicationContext):
+	async def list_teams(self, ctx: discord.ApplicationContext):
 		game: models.Game = load_game(ctx.guild.id)
 
 		desc = []
@@ -290,7 +290,11 @@ class Teams(commands.Cog):
 
 			await ctx.send_response(embed = embeds.tm.teamDeleted(team.color))
 		else:
-			del team.members[ctx.author.id]
+			_id = hex(ctx.author.id)[2:].upper()
+
+			if _id in team.members.keys():
+				del team.members[_id]
+
 			await ctx.send_response(embed = embeds.tm.teamLeft(team.name, team.color, len(team.members)))
 
 		game.save()
