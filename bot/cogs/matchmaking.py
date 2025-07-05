@@ -96,7 +96,7 @@ class Matchmaking(commands.Cog):
 		game: models.Game = load_game(ctx.guild.id)
 
 		calc_score = lambda stats: (.5 * stats['moves']) + (1.5 * stats['attacks']) + (2 * stats['score']) + (15 * stats['continents'])
-		top = sorted(game.list_players(), key = lambda p: calc_score(p.stats))
+		top = sorted(game.list_players(), key = lambda p: calc_score(p.stats), reverse = True)
 
 		# Embed
 		title = ":trophy: Classement individuel"
