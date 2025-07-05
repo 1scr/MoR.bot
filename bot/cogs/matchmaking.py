@@ -18,17 +18,13 @@ class Matchmaking(commands.Cog):
 
 	@matchmaking.command(name = 'new')
 	@discord.default_permissions(manage_events = True)
-	async def prepare_game(self, ctx: discord.ApplicationContext, info_channel: discord.TextChannel):
+	async def prepare_game(self, ctx: discord.ApplicationContext):
 		if ctx.author.guild_permissions.manage_events:
 			game: models.Game = models.Game(ctx.guild.id)
 			game.load(new = True)
 
 			game.lastRefresh = round(time.time())
 			game.save()
-
-			config: GuildConfig = GuildConfig(ctx.guild.id)
-			config.topChannel = info_channel.id
-			config.save()
 
 			await ctx.send_response(embed = embeds.mm.gameCreated(game.rules))
 		else:
