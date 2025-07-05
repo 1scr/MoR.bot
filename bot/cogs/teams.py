@@ -113,9 +113,6 @@ class Teams(commands.Cog):
 				if name.replace(' ', '') == team.name.replace(' ', ''):
 					await ctx.send_response(embed = embeds.tm.alreadyExistingName(name))
 					return
-				elif rgbDistance(color, team.color):
-					await ctx.send_response(embed = embeds.tm.alreadyExistingColor(color))
-					return
 
 			team.name = name
 
@@ -130,6 +127,11 @@ class Teams(commands.Cog):
 			except:
 				await ctx.send_response(embed = embeds.tm.invalidColor(color))
 				return
+
+			for team in game.teams:
+				if rgbDistance(color, team.color):
+					await ctx.send_response(embed = embeds.tm.alreadyExistingColor(color))
+					return
 
 			team.color = color
 
