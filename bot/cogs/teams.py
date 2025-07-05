@@ -114,7 +114,11 @@ class Teams(commands.Cog):
 					await ctx.send_response(embed = embeds.tm.alreadyExistingName(name))
 					return
 
+			old_name = team.name
 			team.name = name
+
+			for country in game.countries.values():
+				if country.team == old_name: country.team = name
 
 		if color:
 			try:
