@@ -29,6 +29,10 @@ class Units(commands.Cog):
 
 		game: models.Game = load_game(ctx.guild.id)
 
+		if not game.open:
+			await self.reply(ctx, embed = embeds.ig.gameNotStarted())
+			return
+
 		ctr1 = game.countries.get(str(base))
 		ctr2 = game.countries.get(str(destination))
 

@@ -232,6 +232,13 @@ class TeamEmbeds:
 		return discord.Embed(title = title, description = description, color = color)
 
 class InGameEmbeds:
+	def gameNotStarted(self):
+		title = "La partie n'a pas commencé"
+		description = "Impossible de bouger des unités pour le moment. Profitez-en pour revoir vos préparatifs."
+		color = discord.Color.brand_red()
+
+		return discord.Embed(title = title, description = description, color = color)
+
 	def conquest_response(self, cqr: models.Game.ConquestResponse, ctr: models.Country, amount: int) -> discord.Embed:
 		title = f"{successEmoji} Victoire !" if cqr.won else f"{failEmoji} Défaite"
 		description = f"""
