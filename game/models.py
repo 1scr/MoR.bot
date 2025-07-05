@@ -51,7 +51,8 @@ class Soldier:
 			"moves": 0,
 			"attacks": 0,
 			"score": 0,
-			"continents": 0
+			"continents": 0,
+			"continent_theft": 0
 		}
 		self.team: str = None
 
@@ -219,6 +220,7 @@ class Game:
 			self.score = 0
 			self.won = False
 			self.is_ally = False
+			self.stole_continent = False
 
 	def conquest(self, _from: Country, target: Country, attackers: int, author_id: str) -> ConquestResponse:
 		cqr = self.ConquestResponse()
@@ -227,6 +229,7 @@ class Game:
 
 		defenders = target.get_units(2)
 		base = defenders
+		base_owner = self.get_continent_owner(target.get_continent())
 
 		soldier = author.members[author_id]
 
@@ -237,6 +240,14 @@ class Game:
 			else:
 				soldier.stats['attacks'] += 1
 				soldier.stats['score'] += 1
+
+			if base_owner != self.get_continent_owner(target.get_continent()):
+				if base_owner:
+					cqr.continent_action = 'stolen'
+					soldier.stats['continent_theft'] += 1
+				else:
+					cqr.continent_action = 'conquested'
+					soldier.stats['continents'] += 1
 
 			cqr.won = True
 
@@ -267,6 +278,14 @@ class Game:
 
 				target.units.append([ attackers, round(time.time()) ]) # Comptabilisation des gains
 
+				if base_owner != self.get_continent_owner(target.get_continent()):
+					if base_owner:
+						cqr.continent_action = 'stolen'
+						soldier.stats['continent_theft'] += 1
+					else:
+						cqr.continent_action = 'conquested'
+						soldier.stats['continents'] += 1
+
 				soldier.stats['score'] += 1
 				cqr.won = True
 
@@ -276,6 +295,46 @@ class Game:
 		self.save()
 
 		return cqr
+
+	def get_continent_countries(self, name: str) -> list[str]:
+		if name == "Afrique": # +5
+			return list(map(str, range(33, 39)))
+		elif name == "Amérique du Nord": # +3
+			return list(map(str, range(1, 10)))
+		elif name == "Amérique du Sud": # +3
+			return list(map(str, range(10, 14)))
+		elif name == "Asie": # +7
+			return list(map(str, range(21, 33)))
+		elif name == "Europe": # +5
+			return list(map(str, range(14, 21)))
+		elif name == "Océanie": # +2
+			return list(map(str, range(39, 43)))
+		elif name == "Eurasie": # +6 (+20 au total)
+			return list(map(str, range(14, 33)))
+		elif name == "Amérique": # +4 (+10 au total)
+			return list(map(str, range(1, 14)))
+		else:
+			return []
+
+	def get_continent_owner(self, name: str) -> str:
+		countries = self.get_continent_countries(name)
+
+		old_name = None
+
+		for ctr in countries:
+			country = self.countries[ctr]
+
+			if country.team != old_name:
+				if old_name:
+					return
+				else:
+					old_name = country.team
+			elif not country.team:
+				return
+			else:
+				continue
+
+		return old_name
 
 	def list_players(self) -> list[Soldier]:
 		players = []
@@ -315,6 +374,17 @@ class Game:
 		return self.startDate != 0 # Si la date a été modifiée c'est que le jeu a commencé
 
 	def refresh(self, times: int = 1) -> None:
+		_boosts = {
+			"Afrique": 5,
+			"Amérique du Nord": 4,
+			"Amérique du Sud": 3,
+			"Asie": 7,
+			"Europe": 5,
+			"Océanie": 2,
+			"Eurasie": 6,
+			"Amériques": 4
+		}
+
 		for country in self.countries.values():
 			rules = self.rules
 
@@ -326,7 +396,26 @@ class Game:
 			else:
 				boost = 1
 
-			amount = round(random.randint(0, 2 * rules.refreshAmountPerCountry) * boost) * times
+			amount = math.ceil(random.randint(0, rules.refreshAmountPerCountry) * boost) * times
+
+
+			# Boosts par continents
+
+			continent = country.get_continent()
+
+			if self.get_continent_owner(continent) and _boosts[continent] > 0:
+				amount += 1
+				_boosts[continent] -= 1
+
+			# Boosts par double continent
+
+			if continent in ("Europe", "Asie") and self.get_continent_owner("Eurasie") and _boosts["Eurasie"] > 0:
+				amount += 1
+				_boosts["Eurasie"] -= 1
+
+			if continent in ("Amérique du Nord", "Amérique du Sud") and self.get_continent_owner("Amériques") and _boosts["Amériques"] > 0:
+				amount += 1
+				_boosts["Amériques"] -= 1
 
 			country.units.append([ amount, 0 ])
 
@@ -336,15 +425,8 @@ class Game:
 
 			refreshes_missed = math.floor((time.time() - self.lastRefresh) / self.rules.refreshRate)
 
-			max_refreshes = math.floor(28800 / self.rules.refreshRate)
-			# Soit 8h sans refresh pour une nuit sans stress
-
-			if refreshes_missed > max_refreshes:
-				# On limite le nombre de refresh pour ne pas se retrouver avec des fichiers de 3Go (insipiré de faits réels :/)
-				refreshes_missed = max_refreshes
-
 			if refreshes_missed > 0:
-				self.refresh(refreshes_missed)
+				self.refresh(times = 1) # On se contera de faire les refreshes un par un
 				self.lastRefresh = round(time.time())
 
 		self.update = round(time.time())
