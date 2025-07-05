@@ -102,7 +102,7 @@
 			"units": [
 				[2, 0]
 			],
-			"frontiers": [11, 12],
+			"frontiers": [9, 11, 12],
 			"team": null,
 			"boost": 1.5
 		},
