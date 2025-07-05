@@ -112,7 +112,7 @@ class Matchmaking(commands.Cog):
 			emoji = ':first_place:' if i == 0 else\
 					':second_place:' if i == 1 else\
 					':third_place:' if i == 2 else\
-					(i + 1) + '-'
+					str(i + 1) + '-'
 
 			body.append(f"{emoji} <@{soldier.id}> ({calc_score(soldier.stats)}pts)")
 
@@ -163,7 +163,7 @@ class Matchmaking(commands.Cog):
 			emoji = ':first_place:' if i == 0 else\
 					':second_place:' if i == 1 else\
 					':third_place:' if i == 2 else\
-					(i + 1) + '-'
+					str(i + 1) + '-'
 
 			body.append(f"{emoji} **{team.name}** ({len(team.countries)} pays)")
 
