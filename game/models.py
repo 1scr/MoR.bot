@@ -103,7 +103,6 @@ class Team:
 
 	def get_chief(self) -> Soldier | None:
 		for member in self.members.values():
-			print(member.__dict__)
 			if member.chief:
 				return member
 
