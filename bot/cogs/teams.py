@@ -208,7 +208,7 @@ class Teams(commands.Cog):
 			team.invites.remove(ctx.author.id) # On supprime son invitation -> il peut pas revenir si il se fait kick
 			game.save()
 
-			await ctx.send_response(embed = embeds.tm.teamJoined(team.name, team.get_chief(), len(team.members)))
+			await ctx.send_response(embed = embeds.tm.teamJoined(team.name, team.get_chief().id, len(team.members)))
 
 	@teams.command(name = 'leave')
 	async def leave_team(self, ctx: discord.ApplicationContext):
