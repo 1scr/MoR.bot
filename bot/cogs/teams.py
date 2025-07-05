@@ -109,8 +109,8 @@ class Teams(commands.Cog):
 				await ctx.send_response(embed = embeds.tm.invalidName(name))
 				return
 
-			for team in game.teams:
-				if name.replace(' ', '') == team.name.replace(' ', ''):
+			for _team in game.teams:
+				if name.replace(' ', '') == _team.name.replace(' ', ''):
 					await ctx.send_response(embed = embeds.tm.alreadyExistingName(name))
 					return
 
@@ -128,8 +128,8 @@ class Teams(commands.Cog):
 				await ctx.send_response(embed = embeds.tm.invalidColor(color))
 				return
 
-			for team in game.teams:
-				if rgbDistance(color, team.color):
+			for _team in game.teams:
+				if rgbDistance(color, _team.color):
 					await ctx.send_response(embed = embeds.tm.alreadyExistingColor(color))
 					return
 
