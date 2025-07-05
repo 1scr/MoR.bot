@@ -56,6 +56,8 @@ class Matchmaking(commands.Cog):
 				country = game.countries[ctr]
 
 				country.team = team.name
+				country.units.append([ 5, round(time.time()) - game.rules.delayAfterMove ]) # 5 unités gratuites pour pas se retrouver coincé par les no mans land
+
 				team.base = country.id
 				team.countries.append(country.id)
 
