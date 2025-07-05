@@ -95,7 +95,7 @@ class Matchmaking(commands.Cog):
 	async def top_solo(self, ctx: discord.ApplicationContext):
 		game: models.Game = load_game(ctx.guild.id)
 
-		calc_score = lambda stats: (.5 * stats['moves']) + (1.5 * stats['attacks']) + (2 * stats['score']) + (15 * stats['continents'])
+		calc_score = lambda stats: (.5 * stats['moves']) + (1.5 * stats['attacks']) + (2 * stats['score']) + (15 * stats['continents'] + (2.5 * stats['continent_theft']))
 		top = sorted(game.list_players(), key = lambda p: calc_score(p.stats), reverse = True)
 
 		# Embed
