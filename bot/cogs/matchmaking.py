@@ -91,11 +91,9 @@ class Matchmaking(commands.Cog):
 
 		await ctx.send_response("Le classement a bien été mis à jour.", ephemeral = True)
 
+	@leaderboard.command(name = "solo")
 	async def top_solo(self, ctx: discord.ApplicationContext):
-		# Pas de réponse ni de defer() car la commande est censée avoir reçu une réponse antérieurement
-
 		game: models.Game = load_game(ctx.guild.id)
-		config: GuildConfig = load_config(ctx.guild.id)
 
 		calc_score = lambda stats: (.5 * stats['moves']) + (1.5 * stats['attacks']) + (2 * stats['score']) + (15 * stats['continents'])
 		top = sorted(game.list_players(), key = lambda p: calc_score(p.stats))
@@ -118,36 +116,11 @@ class Matchmaking(commands.Cog):
 
 		embed = discord.Embed(title = title, description = '\n'.join(body), color = color)
 
-		# Envoi du message
-		if config.topSoloMessage == 0:
-			if config.topChannel == 0:
-				print("No top channel defined.")
-				return
+		await ctx.send_response(embed = embed)
 
-			channel: discord.TextChannel = self.bot.get_channel(config.topChannel)
-
-			if not channel:
-				print("Channel not found.")
-				return
-
-			message = await channel.send(embed = embed)
-
-			config.topSoloMessage = message.id
-			config.save()
-		else:
-			message = self.bot.get_message(config.topSoloMessage)
-
-			if not message:
-				print("Message not found.")
-				return
-
-			await message.edit(embed = embed)
-
+	@leaderboard.command(name = "global")
 	async def top_team(self, ctx: discord.ApplicationContext):
-		# Pas de réponse ni de defer() car la commande est censée avoir reçu une réponse antérieurement
-
 		game: models.Game = load_game(ctx.guild.id)
-		config: GuildConfig = load_config(ctx.guild.id)
 
 		top = sorted(game.teams, key = lambda t: len(t.countries))
 
@@ -169,30 +142,4 @@ class Matchmaking(commands.Cog):
 
 		embed = discord.Embed(title = title, description = '\n'.join(body), color = color)
 
-		# Envoi du message
-		if config.topTeamMessage == 0:
-			if config.topChannel == 0:
-				print("No top channel defined.")
-				return
-
-			channel: discord.TextChannel = self.bot.get_channel(config.topChannel)
-
-			if not channel:
-				print("Channel not found.")
-				return
-
-			message = await channel.send(embed = embed)
-
-			config.topTeamMessage = message.id
-			config.save()
-		else:
-			message = self.bot.get_message(config.topTeamMessage)
-
-			if not message:
-				print("Message not found.")
-				return
-
-			await message.edit(embed = embed)
-
-def setup(bot):
-	bot.add_cog(Matchmaking(bot))
+		await ctx.send_response(embed = embed)
