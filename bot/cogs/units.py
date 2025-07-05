@@ -25,7 +25,8 @@ class Units(commands.Cog):
 
 	@discord.slash_command(name = 'move')
 	async def move_units(self, ctx: discord.ApplicationContext, base: int, destination: int, quantity: int):
-		await ctx.defer()
+		if isinstance(ctx, discord.ApplicationContext): await ctx.defer()
+
 		game: models.Game = load_game(ctx.guild.id)
 
 		ctr1 = game.countries.get(str(base))
@@ -80,11 +81,12 @@ class Units(commands.Cog):
 		else:
 			await self.reply(ctx, embed = embeds.ig.conquest_response(cqr, ctr2, quantity), file = _result)
 
-			for p in initial_team.members.values():
-				member = self.bot.get_user(p.id)
+			if initial_team:
+				for p in initial_team.members.values():
+					member = self.bot.get_user(p.id)
 
-				if (member and member.can_send()):
-					await member.send(embed = embeds.info.defense_response(cqr, ctr2, quantity, ctr1.team))
+					if (member and member.can_send()):
+						await member.send(embed = embeds.info.defense_response(cqr, ctr2, quantity, ctr1.team))
 
 		await matchmaking.Matchmaking(self.bot).top_team(ctx)
 		await matchmaking.Matchmaking(self.bot).top_solo(ctx)

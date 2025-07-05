@@ -40,7 +40,7 @@ async def on_message(message: discord.Message) -> None:
 			cmd[1:] = map(int, cmd[1:])
 
 			await Units(bot).move_units(message, cmd[1], cmd[2], cmd[3])
-		except:
+		except TypeError:
 			await message.reply("Mauvais arguments passés.")
 	elif cmd[0] in ('fmap',):
 		await MiniMap(bot).display_fastmap(message)
