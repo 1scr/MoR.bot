@@ -316,9 +316,12 @@ class Teams(commands.Cog):
 		if member.id not in team.invites:
 			team.invites.append(member.id)
 
-			if member.can_send():
-				await member.send(embed = embeds.info.invite(team.name, team.get_chief().id, len(team.members), ctx.guild.name))
-				sent = True
+			try:
+				if member.can_send():
+					await member.send(embed = embeds.info.invite(team.name, team.get_chief().id, len(team.members), ctx.guild.name))
+					sent = True
+			except:
+				pass
 
 		game.save()
 
