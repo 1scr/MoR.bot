@@ -81,7 +81,7 @@ class Units(commands.Cog):
 		_result = svg_png(f'.local/_map_cache/{ctx.author.id}.svg')
 
 		if cqr.is_ally:
-			await self.reply(ctx, f"Déplacement de **{quantity} unités** entre deux terres alliées (**{ctr1.id}** => **{ctr2.id}**)", file = _result)
+			await self.reply(ctx, f"Déplacement de **{quantity} unités** entre deux terres alliées, de **{ctr1.name}** ({ctr1.id}) à **{ctr2.name}** ({ctr2.id})", file = _result)
 		else:
 			await self.reply(ctx, embed = embeds.ig.conquest_response(cqr, ctr2, quantity), file = _result)
 
@@ -106,7 +106,7 @@ class Units(commands.Cog):
 
 		embed = discord.Embed(
 			title = "Infos refresh",
-			description = f"""
+			description = embeds.noTab(f"""
 			**Prochain refresh:** <t:{next}:R>
 			**Intervalle des refresh:** {rate // 60} minutes
 			**Unités par pays\\*:** {amount} par refresh
@@ -114,7 +114,7 @@ class Units(commands.Cog):
 			> Les unités par pays sont le nombre basique d'unités rajoutées. Celui-ci peut changer en fonction de différents paramètres (le pays concerné, les différents boosts ou nerfs liés aux équipes ou aux continents, etc.)
 
 			> **Les infos ci-dessus ne prennent pas en compte les refresh dûs aux attaques (une attaque a 10% de chances de déclencher un refresh)
-			"""
+			""")
 		)
 
 		await ctx.send_response(embed = embed)

@@ -1,3 +1,5 @@
+import time
+
 import discord
 
 from game import models
@@ -272,6 +274,17 @@ class InGameEmbeds:
 		else:
 			frontiers = "_Aucun pays voisin._"
 
+		_moves = []
+
+		for _move in ctr.units:
+			if _move[1] >= round(time.time()) - 3600:
+				_moves.append(f"- **{'+' if _move[0] >= 0 else '-'}{abs(_move[0])}** (<t:{_move[1]}:R>)")
+
+		if _moves:
+			moves = '\n'.join(_moves)
+		else:
+			moves = "_Aucun mouvement dans les 2 dernières heures._"
+
 		title = f"{infoEmoji} {ctr.name}"
 		description = f"""
 		**Continent:** {ctr.get_continent()}
@@ -279,6 +292,9 @@ class InGameEmbeds:
 
 		**Pays voisins:**
 		{frontiers}
+
+		**Mouvements récents:**
+		{moves}
 		""".replace('\t', '')
 		color = discord.Color(_team.color)
 

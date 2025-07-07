@@ -160,6 +160,9 @@ class Country:
 
 		return round(units) if units >= 0 else 0
 
+	def lastmove(self) -> int:
+		return max([ move[1] for move in self.units ])
+
 	def get_continent(self) -> str:
 		if 0 < self.id <= 9: return "Amérique du Nord"
 		elif 10 <= self.id <= 13: return "Amérique du Sud"
@@ -398,9 +401,7 @@ class Game:
 			else:
 				boost = 0
 
-			lastmove = max([ move[1] for move in country.units ])
-
-			if len(country.units) > 0 and lastmove - round(time.time()) > 7200:
+			if len(country.units) > 0 and country.lastmove() - round(time.time()) > 7200:
 				boost /= 2
 
 			amount = math.ceil(random.randint(0, rules.refreshAmountPerCountry) * boost) * times
