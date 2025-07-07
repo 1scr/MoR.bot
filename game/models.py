@@ -387,15 +387,19 @@ class Game:
 		for country in self.countries.values():
 			rules = self.rules
 
-			if rules.isBoostEnabled:
-				if rules.isBoostReversed:
-					boost = 1 / country.boost
+			if country.team or country.get_units() == 0:
+				if rules.isBoostEnabled:
+					if rules.isBoostReversed:
+						boost = 1 / country.boost
+					else:
+						boost = country.boost
 				else:
-					boost = country.boost
-			elif country.team or country.get_units() == 0:
-				boost = 1
+					boost = 1
 			else:
 				boost = 0
+
+			if len(country.units) > 0 and country.units[-1][0] - round(time.time()) > 7200:
+				boost /= 2
 
 			amount = math.ceil(random.randint(0, rules.refreshAmountPerCountry) * boost) * times
 
