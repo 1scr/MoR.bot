@@ -131,4 +131,4 @@ class Matchmaking(commands.Cog):
 
 		embed = discord.Embed(title = title, description = '\n'.join(body), color = color)
 
-		await self.reply(ctx, embed = embed)
+		await ctx.send_response(ctx, embed = embed)
