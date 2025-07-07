@@ -392,8 +392,10 @@ class Game:
 					boost = 1 / country.boost
 				else:
 					boost = country.boost
-			else:
+			elif country.team or country.get_units() == 0:
 				boost = 1
+			else:
+				boost = 0
 
 			amount = math.ceil(random.randint(0, rules.refreshAmountPerCountry) * boost) * times
 
