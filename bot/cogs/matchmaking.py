@@ -80,13 +80,6 @@ class Matchmaking(commands.Cog):
 		else:
 			await ctx.send_response("La partie est temporairement suspendue.")
 
-	@leaderboard.command(name = "update")
-	async def update_leaderboard(self, ctx: discord.ApplicationContext):
-		await self.top_solo(ctx)
-		await self.top_team(ctx)
-
-		await ctx.send_response("Le classement a bien été mis à jour.", ephemeral = True)
-
 	@leaderboard.command(name = "solo")
 	async def top_solo(self, ctx: discord.ApplicationContext):
 		game: models.Game = load_game(ctx.guild.id)
@@ -138,4 +131,4 @@ class Matchmaking(commands.Cog):
 
 		embed = discord.Embed(title = title, description = '\n'.join(body), color = color)
 
-		await ctx.send_response(embed = embed)
+		await self.reply(ctx, embed = embed)

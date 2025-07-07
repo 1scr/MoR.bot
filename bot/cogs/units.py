@@ -92,8 +92,5 @@ class Units(commands.Cog):
 					if (member and member.can_send()):
 						await member.send(embed = embeds.info.defense_response(cqr, ctr2, quantity, ctr1.team))
 
-		await matchmaking.Matchmaking(self.bot).top_team(ctx)
-		await matchmaking.Matchmaking(self.bot).top_solo(ctx)
-
 def setup(bot):
 	bot.add_cog(Units(bot))
