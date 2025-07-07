@@ -270,7 +270,7 @@ class Game:
 
 			target.units.append([ -(base - defenders), round(time.time()) ]) # Comptabilisation des pertes
 
-			if attackers != 0:
+			if defenders <= base / 10:
 				target.team = author.name
 				author.countries.append(target.id)
 				if victim: victim.countries.remove(target.id)
