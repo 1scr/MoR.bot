@@ -219,7 +219,7 @@ class Game:
 			self.score = 0
 			self.won = False
 			self.is_ally = False
-			self.stole_continent = False
+			self.continent_action = None
 
 	def conquest(self, _from: Country, target: Country, attackers: int, author_id: str) -> ConquestResponse:
 		cqr = self.ConquestResponse()
@@ -398,7 +398,9 @@ class Game:
 			else:
 				boost = 0
 
-			if len(country.units) > 0 and country.units[-1][0] - round(time.time()) > 7200:
+			lastmove = max([ move[1] for move in country.units ])
+
+			if len(country.units) > 0 and lastmove - round(time.time()) > 7200:
 				boost /= 2
 
 			amount = math.ceil(random.randint(0, rules.refreshAmountPerCountry) * boost) * times

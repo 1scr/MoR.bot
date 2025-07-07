@@ -92,5 +92,32 @@ class Units(commands.Cog):
 					if (member and member.can_send()):
 						await member.send(embed = embeds.info.defense_response(cqr, ctr2, quantity, ctr1.team))
 
+	@discord.slash_command(name = "next-refresh")
+	async def refresh_info(self, ctx: discord.ApplicationContext):
+		game: models.Game = load_game(ctx.guild.id)
+
+		last = game.lastRefresh
+		rate = game.rules.refreshRate
+		next = last + rate
+		amount = game.rules.refreshAmountPerCountry
+
+		if next < round(time.time()):
+			next = round(time.time())
+
+		embed = discord.Embed(
+			title = "Infos refresh",
+			description = f"""
+			**Prochain refresh:** <t:{next}:R>
+			**Intervalle des refresh:** {rate // 60} minutes
+			**Unités par pays\\*:** {amount} par refresh
+
+			> Les unités par pays sont le nombre basique d'unités rajoutées. Celui-ci peut changer en fonction de différents paramètres (le pays concerné, les différents boosts ou nerfs liés aux équipes ou aux continents, etc.)
+
+			> **Les infos ci-dessus ne prennent pas en compte les refresh dûs aux attaques (une attaque a 10% de chances de déclencher un refresh)
+			"""
+		)
+
+		await ctx.send_response(embed = embed)
+
 def setup(bot):
 	bot.add_cog(Units(bot))
