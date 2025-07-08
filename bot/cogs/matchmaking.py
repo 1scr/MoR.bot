@@ -44,7 +44,7 @@ class Matchmaking(commands.Cog):
 			game.lastRefresh = 0
 			game.open = True
 
-			if not game.rules.spawnOnTeamCreate:
+			if game.rules.waitForStartToSpawn:
 				for team in game.teams:
 					for i in range(1 + game.rules.isSpawnDouble):
 						ctr = str(random.randint(1, 42))

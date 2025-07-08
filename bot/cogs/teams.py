@@ -87,17 +87,18 @@ class Teams(commands.Cog):
 
 		game.teams.append(team)
 
-		ctr = str(random.randint(1, 42))
-		while game.countries[ctr].team:
+		if not game.rules.waitForStartToSpawn:
 			ctr = str(random.randint(1, 42))
+			while game.countries[ctr].team:
+				ctr = str(random.randint(1, 42))
 
-		country = game.countries[ctr]
+			country = game.countries[ctr]
 
-		country.team = team.name
-		country.units.append([ 5, 0 ]) # 5 unités gratuites pour pas se retrouver coincé par les no mans land
+			country.team = team.name
+			country.units.append([ 5, 0 ]) # 5 unités gratuites pour pas se retrouver coincé par les no mans land
 
-		team.base = country.id
-		team.countries.append(country.id)
+			team.base = country.id
+			team.countries.append(country.id)
 
 		game.save()
 

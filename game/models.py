@@ -15,7 +15,7 @@ class Gamerules:
 		self.matchmakingWhilePlaying: bool = False # Autoriser la création d'équipes une fois la partie commencée (interdit par défaut)
 		self.refreshAmountPerCountry: int = 1 # Nombre moyen d'unités ajoutées à chaque pays lors d'un refresh (0~2 unités par défaut)
 		self.refreshRate: int = 1800 # Temps autorisé (en secondes) entre chaque refresh (30min par défaut)
-		self.spawnOnTeamCreate: bool = False # Si le spawn doit être fait à la création de l'équipe ou au démarrage de la partie (désactivé par défaut)
+		self.waitForStartToSpawn: bool = True # Attendre le démarrage de la partie pour attribuer les pays de départ (activé par défaut)
 
 	def _load(self, _data: dict = {}):
 		# Typage forcé des règles
@@ -28,7 +28,7 @@ class Gamerules:
 		self.matchmakingWhilePlaying: bool = bool(_data.get('matchmakingWhilePlaying', False))
 		self.refreshAmountPerCountry: int = int(_data.get('refresh', {'amountPerCountry': 1}).get('amountPerCountry', 1))
 		self.refreshRate: int = int(_data.get('refresh', {'rate': 1800}).get('rate', 1800))
-		self.spawnOnTeamCreate: bool = bool(_data.get('spawn', {'onTeamCreate': False}).get('onTeamCreate', False))
+		self.waitForStartToSpawn: bool = bool(_data.get('spawn', {'waitForStart': False}).get('waitForStart', False))
 
 	def _to_dict(self):
 		rules = {
@@ -42,6 +42,10 @@ class Gamerules:
 			"refresh": {
 				"amountPerCountry": self.refreshAmountPerCountry,
 				"rate": self.refreshRate
+			},
+			"spawn": {
+				"double": self.isSpawnDouble,
+				"waitForStart": self.waitForStartToSpawn
 			}
 		}
 
