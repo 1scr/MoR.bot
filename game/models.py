@@ -11,9 +11,11 @@ class Gamerules:
 		self.delayAfterMove: int = 3600 # Temps autorisé entre chaque mouvements (1h par défaut)
 		self.isBoostEnabled: bool = True # Prendre en compte les boosts (activés par défaut)
 		self.isBoostReversed: bool = True # Inverser l'influence des boosts (désactivé par défaut)
+		self.isSpawnDouble: bool = False # Deux pays attribués au début au lieu d'un seul (désactivé par défaut)
 		self.matchmakingWhilePlaying: bool = False # Autoriser la création d'équipes une fois la partie commencée (interdit par défaut)
 		self.refreshAmountPerCountry: int = 1 # Nombre moyen d'unités ajoutées à chaque pays lors d'un refresh (0~2 unités par défaut)
 		self.refreshRate: int = 1800 # Temps autorisé (en secondes) entre chaque refresh (30min par défaut)
+		self.spawnOnTeamCreate: bool = False # Si le spawn doit être fait à la création de l'équipe ou au démarrage de la partie (désactivé par défaut)
 
 	def _load(self, _data: dict = {}):
 		# Typage forcé des règles
@@ -22,9 +24,11 @@ class Gamerules:
 		self.delayAfterMove: int = int(_data.get('delayAfterMove', 3600))
 		self.isBoostEnabled: bool = bool(_data.get('boosts', {'enabled': True}).get('enabled', True))
 		self.isBoostReversed: bool = bool(_data.get('boosts', {'reversed': True}).get('reversed', True))
+		self.isSpawnDouble: bool = bool(_data.get('spawn', {'double': False}).get('double', False))
 		self.matchmakingWhilePlaying: bool = bool(_data.get('matchmakingWhilePlaying', False))
 		self.refreshAmountPerCountry: int = int(_data.get('refresh', {'amountPerCountry': 1}).get('amountPerCountry', 1))
 		self.refreshRate: int = int(_data.get('refresh', {'rate': 1800}).get('rate', 1800))
+		self.spawnOnTeamCreate: bool = bool(_data.get('spawn', {'onTeamCreate': False}).get('onTeamCreate', False))
 
 	def _to_dict(self):
 		rules = {

@@ -210,6 +210,13 @@ class TeamEmbeds:
 
 		return discord.Embed(title = title, description = description, color = color)
 
+	def tooMuchTeams(self, limit: int) -> discord.Embed:
+		title = f"{failEmoji} Il y a trop d'équipes"
+		description = f"La partie accepte au maximum {limit} équipes. Essayez d'en rejoindre une existante."
+		color = discord.Color.brand_red()
+
+		return discord.Embed(title = title, description = description, color = color)
+
 	# -------------------- SUCCÈS --------------------
 
 	def teamCreated(self, name: str, color: int, author: int) -> discord.Embed:

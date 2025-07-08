@@ -1,3 +1,5 @@
+import random
+
 import discord
 from discord.ext import commands
 
@@ -33,6 +35,9 @@ class Teams(commands.Cog):
 		if game.open and not game.rules.matchmakingWhilePlaying:
 			await ctx.send_response(embed = embeds.tm.gameStarted())
 			return
+
+		if len(game.teams) >= 10:
+			await ctx.send_response(embeds.tm.tooMuchTeams(10))
 
 		# On vérifie déjà si la couleur est bien hexadécimale (on sait jamais avec eux)
 		try:
@@ -81,6 +86,19 @@ class Teams(commands.Cog):
 		team.members[hex_id] = soldier
 
 		game.teams.append(team)
+
+		ctr = str(random.randint(1, 42))
+		while game.countries[ctr].team:
+			ctr = str(random.randint(1, 42))
+
+		country = game.countries[ctr]
+
+		country.team = team.name
+		country.units.append([ 5, 0 ]) # 5 unités gratuites pour pas se retrouver coincé par les no mans land
+
+		team.base = country.id
+		team.countries.append(country.id)
+
 		game.save()
 
 		await ctx.send_response(embed = embeds.tm.teamCreated(name, color, ctx.author.id))

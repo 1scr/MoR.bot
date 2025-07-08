@@ -44,18 +44,20 @@ class Matchmaking(commands.Cog):
 			game.lastRefresh = 0
 			game.open = True
 
-			for team in game.teams:
-				ctr = str(random.randint(1, 44))
-				while game.countries[ctr].team:
-					ctr = str(random.randint(1, 44))
+			if not game.rules.spawnOnTeamCreate:
+				for team in game.teams:
+					for i in range(1 + game.rules.isSpawnDouble):
+						ctr = str(random.randint(1, 42))
+						while game.countries[ctr].team:
+							ctr = str(random.randint(1, 42))
 
-				country = game.countries[ctr]
+						country = game.countries[ctr]
 
-				country.team = team.name
-				country.units.append([ 5, round(time.time()) - game.rules.delayAfterMove ]) # 5 unités gratuites pour pas se retrouver coincé par les no mans land
+						country.team = team.name
+						country.units.append([ 5, 0 ]) # 5 unités gratuites pour pas se retrouver coincé par les no mans land
 
-				team.base = country.id
-				team.countries.append(country.id)
+						team.base = country.id
+						team.countries.append(country.id)
 
 			game.save()
 
