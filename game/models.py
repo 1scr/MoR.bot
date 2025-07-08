@@ -61,6 +61,14 @@ class Soldier:
 		self.stats = data.get('stats', self.stats)
 		self.team = data.get('team', self.team)
 
+	def calc_score(self) -> float:
+		stats = self.stats
+		return (.5 * stats['moves'])\
+			+ (1.5 * stats['attacks'])\
+			+ (2   * stats['score'])\
+			+ (15  * stats['continents'])\
+			+ (2.5 * stats['continent_theft'])
+
 	def _convert(self) -> dict:
 		return {
 			"chief": self.chief,
@@ -290,9 +298,6 @@ class Game:
 
 				soldier.stats['score'] += 1
 				cqr.won = True
-
-		if random.randint(0, 9) == 0:
-			self.refresh() # Refresh au hasard
 
 		self.save()
 

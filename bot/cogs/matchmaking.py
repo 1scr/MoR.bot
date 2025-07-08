@@ -84,8 +84,7 @@ class Matchmaking(commands.Cog):
 	async def top_solo(self, ctx: discord.ApplicationContext):
 		game: models.Game = load_game(ctx.guild.id)
 
-		calc_score = lambda stats: (.5 * stats['moves']) + (1.5 * stats['attacks']) + (2 * stats['score']) + (15 * stats['continents'] + (2.5 * stats['continent_theft']))
-		top = sorted(game.list_players(), key = lambda p: calc_score(p.stats), reverse = True)
+		top = sorted(game.list_players(), key = lambda p: p.calc_score(), reverse = True)
 
 		# Embed
 		title = ":trophy: Classement individuel"
@@ -101,7 +100,7 @@ class Matchmaking(commands.Cog):
 					':third_place:' if i == 2 else\
 					str(i + 1) + '-'
 
-			body.append(f"{emoji} <@{soldier.id}> ({calc_score(soldier.stats)}pts)")
+			body.append(f"{emoji} <@{soldier.id}> ({soldier.calc_score()}pts)")
 
 		embed = discord.Embed(title = title, description = '\n'.join(body), color = color)
 
@@ -132,3 +131,39 @@ class Matchmaking(commands.Cog):
 		embed = discord.Embed(title = title, description = '\n'.join(body), color = color)
 
 		await ctx.send_response(embed = embed)
+
+	@discord.slash_command(name = "palmarès")
+	async def palmares(self, ctx: discord.ApplicationContext, member: discord.Member | None = None):
+		game: models.Game = load_game(ctx.guild.id)
+
+		_top_solo = sorted(game.list_players(), key = lambda p: p.calc_score(), reverse = True)
+		_top_team = sorted(game.teams, key = lambda t: len(t.countries), reverse = True)
+
+		if not member:
+			member = ctx.author
+
+		player = game.fetch_player(member.id)
+
+		if player:
+			team = game.get_team(player.team)
+
+			rank_solo = None
+			for i, s in enumerate(_top_solo):
+				if s.id == player.id: rank_solo = i
+
+			rank_team = None
+			for i, t in enumerate(_top_team):
+				if t.name == team.name: rank_team = i
+		else:
+			player = models.Soldier(member.id)
+			team = None
+			rank_solo = None
+			rank_team = None
+
+		await ctx.send_response(embed = embeds.mm.panel(
+			member.display_name,
+			player,
+			team,
+			rank_solo,
+			rank_team
+		))
