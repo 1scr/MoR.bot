@@ -39,7 +39,12 @@ async def on_message(message: discord.Message) -> None:
 		try:
 			cmd[1:] = map(int, cmd[1:])
 
-			await Units(bot).move_units(message, cmd[1], cmd[2], cmd[3])
+			if len(cmd) == 4:
+				await Units(bot).move_units(message, cmd[1], cmd[2], cmd[3])
+			elif len(cmd) == 3:
+				await Units(bot).move_units(message, cmd[1], cmd[2])
+			else:
+				await message.reply(':x:')
 		except TypeError:
 			await message.reply("Mauvais arguments passés.")
 	elif cmd[0] in ('fmap',):

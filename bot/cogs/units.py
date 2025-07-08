@@ -1,3 +1,5 @@
+import random
+
 import discord
 from discord.ext import commands
 
@@ -24,7 +26,7 @@ class Units(commands.Cog):
 			print(f"Asked for ApplicationContext or Message, got {type(ctx)}")
 
 	@discord.slash_command(name = 'move')
-	async def move_units(self, ctx: discord.ApplicationContext, base: int, destination: int, quantity: int):
+	async def move_units(self, ctx: discord.ApplicationContext, base: int, destination: int, quantity: int | None = None):
 		if isinstance(ctx, discord.ApplicationContext): await ctx.defer()
 
 		game: models.Game = load_game(ctx.guild.id)
@@ -58,12 +60,27 @@ class Units(commands.Cog):
 			await self.reply(ctx, embed = embeds.ig.no_frontier(ctr1, ctr2))
 			return
 
-		if quantity > ctr1.get_units(1): # Pas la peine de déclencher une erreur
+		if (not quantity) or quantity > ctr1.get_units(1): # Pas la peine de déclencher une erreur
 			quantity = ctr1.get_units(1)
 
 		initial_team = game.get_team(ctr2.team) # Utils pour la suite
 
 		cqr = game.conquest(ctr1, ctr2, quantity, hex(ctx.author.id)[2:].upper())
+
+		refreshed = 0
+		if random.randint(1, 10) == 1:
+			game.refresh()
+			refreshed = 1
+		elif random.randint(1, 50) == 1:
+			game.refresh(2)
+			refreshed = 2
+		elif random.randint(1, 100) == 1:
+			game.refresh(5)
+			refreshed = 5
+		elif random.randint(1, 500) == 1:
+			game.refresh(10)
+			refreshed = 10
+
 		game.save()
 
 		with open('assets/map.svg') as _buffer:
@@ -92,6 +109,42 @@ class Units(commands.Cog):
 					if (member and member.can_send()):
 						await member.send(embed = embeds.info.defense_response(cqr, ctr2, quantity, ctr1.team))
 
+		if refreshed == 1:
+			embed = discord.Embed(
+				title = "Pas mal",
+				description = "Vous avez déclenché un refresh en attaquant. Chaque attaque offre 10% de chances de déclencher un refresh.",
+				color = 0x123456
+			)
+		elif refreshed == 2:
+			embed = discord.Embed(
+				title = "Coup double !",
+				description = "Vous avez déclenché un **double refresh** en attaquant. Chaque attaque offre 5% de chances de déclencher un double refresh.",
+				color = 0x123456
+			)
+		elif refreshed == 5:
+			embed = discord.Embed(
+				title = "Il pleut des unités :military_helmet:",
+				description = "Vous avez déclenché un __**mega refresh**__ (5 refresh) en attaquant. Chaque attaque offre 2% de chances de déclencher un mega refresh.",
+				color = 0x123456
+			)
+		elif refreshed == 10:
+			embed = discord.Embed(
+				title = "DROP THE BOMB :lips:",
+				description = "Vous avez déclenché un __**GIGA REFRESH**__ (10 refresh) en attaquant. Chaque attaque offre 1% de chances de déclencher un giga refresh.",
+				color = 0x123456
+			)
+
+		team = game.get_team(player.team)
+
+		if len(team.countries) == game.rules.countriesToWin:
+			embed = discord.Embed(
+				title = "Victoire !",
+				description = f"Vous avez atteint {game.rules.countriesToWin}"
+			)
+
+		if refreshed != 0:
+			await self.reply(ctx, embed = embed)
+
 	@discord.slash_command(name = "next-refresh")
 	async def refresh_info(self, ctx: discord.ApplicationContext):
 		game: models.Game = load_game(ctx.guild.id)
@@ -113,7 +166,7 @@ class Units(commands.Cog):
 
 			> Les unités par pays sont le nombre basique d'unités rajoutées. Celui-ci peut changer en fonction de différents paramètres (le pays concerné, les différents boosts ou nerfs liés aux équipes ou aux continents, etc.)
 
-			> **Les infos ci-dessus ne prennent pas en compte les refresh dûs aux attaques (une attaque a 10% de chances de déclencher un refresh)
+			> **Les infos ci-dessus ne prennent pas en compte les refresh dûs aux attaques (une attaque a 10% de chances de déclencher un refresh)**
 			""")
 		)
 
