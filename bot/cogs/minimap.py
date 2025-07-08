@@ -186,7 +186,27 @@ class MiniMap(commands.Cog):
 			await ctx.send_response("Ce pays n'existe pas.")
 			return
 
-		embed = embeds.ig.country_info(country, game)
+		player = game.fetch_player(ctx.author.id)
+
+		is_ally = country.team == player.team
+
+		enemies: dict[str, int] = {}
+
+		for f in country.frontiers:
+			ctr = game.countries[str(f)]
+
+			if ctr.team == country.team:
+				continue
+
+			if not ctr.team:
+				continue
+
+			if ctr.team in enemies:
+				enemies[ctr.team] += ctr.get_units(1)
+			else:
+				enemies[ctr.team] = ctr.get_units(1)
+
+		embed = embeds.ig.country_info(country, game, enemies, is_ally)
 
 		game.save()
 

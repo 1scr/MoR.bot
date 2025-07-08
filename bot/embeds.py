@@ -84,6 +84,41 @@ class MatchEmbeds:
 
 		return discord.Embed(title = title, description = noTab(description), color = color)
 
+	def panel(self, _name: str, player: models.Soldier, team: models.Team = None, top_solo: int = None, top_team: int = None) -> discord.Embed:
+		title = f"Palmarès de {_name}"
+
+		emoji_solo = 'Non classé(e)' if top_solo is None else\
+			':first_place:' if top_solo == 0 else\
+			':second_place:' if top_solo == 1 else\
+			':third_place:' if top_solo == 2 else\
+			':military_medal:' + str(top_solo + 1) if top_solo <= 4 else\
+			':medal:' + str(top_solo + 1)
+
+		emoji_team = 'Non classé(e)' if top_team is None else\
+			':first_place:' if top_team == 0 else\
+			':second_place:' if top_team == 1 else\
+			':third_place:' if top_team == 2 else\
+			':military_medal:' + str(top_team + 1) if top_team <= 4 else\
+			':medal:' + str(top_team + 1)
+
+		description = f"""
+		**Équipe:** {player.team if player.team else "Aucune"}{" (chef d'équipe)" if player.chief else " "}
+
+		**Rang solo:** {emoji_solo}
+		**Rang d'équipe:** {emoji_team}
+
+		## Score: {player.calc_score()}
+		**Transferts:** {player.stats['moves']} \u279C {.5 * player.stats['moves']}pts
+		**Attaques:** {player.stats['attacks']} \u279C {1.5 * player.stats['attacks']}pts
+		**Attaques réussies:** {player.stats['score']} \u279C {2 * player.stats['score']}pts
+		**Continents conquis:** {player.stats['continents']} \u279C {15 * player.stats['continents']}pts
+		**Continents volés:** {player.stats['continent_theft']} \u279C {2.5 * player.stats['continent_theft']}pts
+		"""
+
+		color = discord.Color(team.color)
+
+		return discord.Embed(title = title, description = noTab(description), color = color)
+
 	# -------------------- ERREURS --------------------
 
 	def gameAlreadyStarted(self):
@@ -265,7 +300,7 @@ class InGameEmbeds:
 
 		return discord.Embed(title = title, description = description, color = color)
 
-	def country_info(self, ctr: models.Country, game: models.Game) -> discord.Embed:
+	def country_info(self, ctr: models.Country, game: models.Game, enemies: dict[str, int] = {}, is_ally: bool = True) -> discord.Embed:
 		_team: models.Team = game.get_team(ctr.team)
 		_frontiers: list[models.Country] = [ c for c in game.countries.values() if c.id in ctr.frontiers ]
 
@@ -285,10 +320,37 @@ class InGameEmbeds:
 		else:
 			moves = "_Aucun mouvement dans les 2 dernières heures._"
 
+		if enemies == {}:
+			_danger = 0
+		else:
+			_danger = max(enemies.values()) if is_ally\
+				else enemies.get(_team.name) if _team.name in enemies.keys()\
+				else 0
+
+		if ctr.get_units(2) == 0:
+			_threat = 2
+		else:
+			if _danger == 0:
+				_threat = 0
+			else:
+				_threat = _danger / ctr.get_units(2)
+
+		if _threat == 0:
+			threat = "Inexistant" if is_ally else "Impossible"
+		elif 0 < _threat <= 1.5: 
+			threat = "Existant" if is_ally else "Possible"
+		elif 1.5 < _threat < 2:
+			threat = "Présent" if is_ally else "Favorable"
+		else:
+			threat = "CRITIQUE" if is_ally else "Très favorable"
+
+		_label = "Danger" if is_ally else "Attaque"
+
 		title = f"{infoEmoji} {ctr.name}"
 		description = f"""
 		**Continent:** {ctr.get_continent()}
 		**Unités:** {ctr.get_units(1)}/{ctr.get_units(0)}
+		**{_label}:** {threat} ({_danger}v{ctr.get_units(2)})
 
 		**Pays voisins:**
 		{frontiers}
