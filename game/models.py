@@ -1,7 +1,9 @@
 import json
 import math
+import os
 import random
 import time
+import typing
 
 class Gamerules:
 	def __init__(self, _data: dict = {}):
@@ -50,6 +52,14 @@ class Gamerules:
 		}
 
 		return rules
+
+	def _get_type(self, param: str) -> typing.Type:
+		prototype = Gamerules().__dict__ # Nouveau prototype vierge de toute modification
+
+		if param in prototype.keys():
+			return type(prototype[param])
+		else:
+			raise ValueError(f"'{param}' is not known as a game rule")
 
 class Soldier:
 	def __init__(self, id: int):
@@ -196,9 +206,15 @@ class Game:
 		self.startDate: int = 0 # Date de démarrage du jeu
 		self.update: int = 0 # Dernière activité
 		self.lastRefresh: int = 0 # Dernier refresh des unités
+		self.moves: list[tuple[int, int]] = [] # Historique des mouvements
 		self.open: bool = False # En pause ou non
 
 		self.rules = Gamerules()
+
+		_folder = f".local/_map_gif_cache/{self.id}"
+
+		if not os.path.exists(_folder):
+			os.makedirs(_folder)
 
 	def __generate_json(self):
 		countries = {}
@@ -273,10 +289,14 @@ class Game:
 
 			_from.units.append([ -attackers, round(time.time()) ])
 			target.units.append([ attackers, round(time.time()) ]) # Comptabilisation des gains
+
+			self.moves.append(_from.id, -attackers)
+			self.moves.append(target.id, attackers)
 		else:
 			soldier.stats['attacks'] += 1
 
 			_from.units.append([ -attackers, round(time.time()) ])
+			self.moves.append(_from.id, -attackers)
 
 			while attackers > 0 and defenders > base / 10:
 				if random.randint(0, 100) > 30:
@@ -288,6 +308,7 @@ class Game:
 					cqr.losses += 1
 
 			target.units.append([ -(base - defenders), round(time.time()) ]) # Comptabilisation des pertes
+			self.moves.append(target.id, -(base - defenders))
 
 			if defenders <= base / 10:
 				target.team = author.name
@@ -295,6 +316,7 @@ class Game:
 				if victim: victim.countries.remove(target.id)
 
 				target.units.append([ attackers, round(time.time()) ]) # Comptabilisation des gains
+				self.moves.append(target.id, attackers)
 
 				if base_owner != self.get_continent_owner(target.get_continent()):
 					if base_owner:
