@@ -120,6 +120,25 @@ class MiniMap(commands.Cog):
 
 		await ctx.send_followup(file = _result)
 
+	@minimap.command(name = 'gif')
+	async def display_map_gif(self, ctx: discord.ApplicationContext):
+		await ctx.defer()
+
+		game: models.Game = load_game(ctx.guild.id)
+
+		with open('assets/map.svg') as _buffer:
+			_map = _buffer.read()
+
+		for ctr in game.countries.values():
+			if ctr.team:
+				_map = fillCountry(_map, hex(game.get_team(ctr.team).color).replace('0x', ''), ctr.id)
+
+		gif = create_gif(game)
+
+		_result = discord.File(gif, "ululu.gif")
+
+		await ctx.send_followup(file = _result, ephemeral = True)
+
 
 	@minimap.command(name = 'continents')
 	async def display_map_continents(self, ctx: discord.ApplicationContext):

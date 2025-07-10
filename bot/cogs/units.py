@@ -1,4 +1,5 @@
 import random
+import time
 
 import discord
 from discord.ext import commands
@@ -144,6 +145,9 @@ class Units(commands.Cog):
 
 		if refreshed != 0:
 			await self.reply(ctx, embed = embed)
+
+		if cqr.won or cqr.is_ally:
+			save_map(game)
 
 	@discord.slash_command(name = "next-refresh")
 	async def refresh_info(self, ctx: discord.ApplicationContext):

@@ -1,8 +1,13 @@
 import cairosvg
+import glob
 from io import BytesIO
 import json
 import math
+import os
+from PIL import Image
+import shutil
 import time
+import urllib
 
 import discord
 
@@ -92,14 +97,14 @@ def editCount(content: str, text: str, id: int):
 
 	return '\n'.join(newItems)
 
-def svg_png(path: str) -> discord.File:
+def svg_png(path: str, is_discord: bool = True) -> discord.File:
 	tag = round(time.time())
 	cairosvg.svg2png(url = path, write_to = f'.local/cache/output_{tag}.png', dpi = 300)
 
 	with open(f'.local/cache/output_{tag}.png', 'rb') as _buffer:
 		pngdata = BytesIO(_buffer.read())
 
-	return discord.File(pngdata, filename = f'map.png')
+	return discord.File(pngdata, filename = f'map.png') if is_discord else pngdata
 
 class GuildConfig:
 	def __init__(self, id: int):
@@ -143,3 +148,51 @@ def load_config(id: int) -> GuildConfig:
 	config = GuildConfig(id)
 	config.load()
 	return config
+
+def save_map(game: models.Game):
+	with open('assets/map.svg') as _buffer:
+		_map = _buffer.read()
+
+	for ctr in game.countries.values():
+		if ctr.team:
+			_map = fillCountry(_map, hex(game.get_team(ctr.team).color).replace('0x', ''), ctr.id)
+
+		_map = editCount(_map, ctr.name, ctr.id)
+
+	folder = f".local/_map_gif_cache/{game.id}"
+	path = f"{folder}/map_{str(len(game.moves)).zfill(6)}.svg"
+
+	with open(path, 'w', encoding = 'UTF-8') as _buffer:
+		_buffer.write(_map)
+
+def create_gif(game: models.Game):
+	os.makedirs("gif_preview", exist_ok = True)
+
+	folder = f".local/_map_gif_cache/{game.id}"
+
+	i = 0
+	stopped = False
+
+	while not stopped:
+		path = f"{folder}/map_{str(i).zfill(6)}.svg"
+
+		try:
+			with open(f".local/gif_preview/image_{str(i).zfill(6)}.png", 'wb') as _buffer:
+				png = svg_png(path, is_discord = False)
+				_buffer.write(png.read())
+		except (FileNotFoundError, urllib.error.URLError):
+			os.remove(f".local.gif_preview/image_{str(i).zfill(6)}.png")
+			stopped = True
+
+		i += 1
+
+	gif = BytesIO()
+
+	frames = [ Image.open(image) for image in glob.glob(f".local/gif_preview/*.png") ]
+	frame_one = frames[0]
+	frame_one.save(gif, format = "GIF", append_images = frames, save_all = True, duration = 100, loop = 0)
+
+	shutil.rmtree("gif_preview")
+
+	gif.seek(0)
+	return gif
