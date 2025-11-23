@@ -9,4 +9,3 @@ cairosvg
 
 # Discord bot
 py-cord
-audioop-lts

@@ -1,0 +1,9 @@
+version: "3"
+
+services:
+  bot:
+    image: riskbot
+    container_name: RiskBot
+    restart: unless-stopped
+    env_file:
+      - .env

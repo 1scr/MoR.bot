@@ -1,4 +1,3 @@
-import cairosvg
 import glob
 from io import BytesIO
 import json
@@ -8,6 +7,8 @@ from PIL import Image
 import shutil
 import time
 import urllib
+import subprocess
+import tempfile
 
 import discord
 
@@ -99,9 +100,39 @@ def editCount(content: str, text: str, id: int):
 
 def svg_png(path: str, is_discord: bool = True) -> discord.File:
 	tag = round(time.time())
-	cairosvg.svg2png(url = path, write_to = f'.local/cache/output_{tag}.png', dpi = 300)
 
-	with open(f'.local/cache/output_{tag}.png', 'rb') as _buffer:
+	os.makedirs('.local/cache', exist_ok = True)
+	output_path = f'.local/cache/output_{tag}.png'
+
+	commands = [
+		# Inkscape >=1.0 new CLI (export-type)
+		['inkscape', path, '--export-type=png', f'--export-filename={output_path}', '--export-dpi=300'],
+		# Alternative new CLI form
+		['inkscape', path, f'--export-filename={output_path}', '--export-dpi=300'],
+		# Legacy CLI forms
+		['inkscape', '-o', output_path, '-d', '300', path],
+		['inkscape', '-z', '-e', output_path, '-d', '300', path],
+	]
+
+	last_exc = None
+	for cmd in commands:
+		try:
+			subprocess.run(cmd, check=True, capture_output=True)
+			last_exc = None
+			break
+		except FileNotFoundError as e:
+			# Inkscape is not installed / not found in PATH
+			last_exc = e
+			break
+		except subprocess.CalledProcessError as e:
+			# This particular CLI form failed; try next
+			last_exc = e
+
+	if last_exc is not None:
+		# Provide a clear error to the caller (user can install Inkscape)
+		raise RuntimeError('SVG->PNG conversion failed: Inkscape not found or conversion errors. Install Inkscape and ensure it is on PATH.') from last_exc
+
+	with open(output_path, 'rb') as _buffer:
 		pngdata = BytesIO(_buffer.read())
 
 	return discord.File(pngdata, filename = f'map.png') if is_discord else pngdata

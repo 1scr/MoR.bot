@@ -296,7 +296,7 @@ class Game:
 			soldier.stats['attacks'] += 1
 
 			_from.units.append([ -attackers, round(time.time()) ])
-			self.moves.append(_from.id, -attackers)
+			self.moves.append([ _from.id, -attackers ])
 
 			while attackers > 0 and defenders > base / 10:
 				if random.randint(0, 100) > 30:
@@ -308,7 +308,7 @@ class Game:
 					cqr.losses += 1
 
 			target.units.append([ -(base - defenders), round(time.time()) ]) # Comptabilisation des pertes
-			self.moves.append(target.id, -(base - defenders))
+			self.moves.append([ target.id, -(base - defenders) ])
 
 			if defenders <= base / 10:
 				target.team = author.name
@@ -316,7 +316,7 @@ class Game:
 				if victim: victim.countries.remove(target.id)
 
 				target.units.append([ attackers, round(time.time()) ]) # Comptabilisation des gains
-				self.moves.append(target.id, attackers)
+				self.moves.append([ target.id, attackers ])
 
 				if base_owner != self.get_continent_owner(target.get_continent()):
 					if base_owner:

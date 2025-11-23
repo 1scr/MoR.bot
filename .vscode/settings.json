@@ -9,7 +9,7 @@
 		"**/*.pyo": true,
 		"**/.venv": true,
 		"**/.github": true,
-		"**/.local": true
+		//"**/.local": true
 	},
 	"python.testing.unittestEnabled": true,
 	"python.testing.unittestArgs": [

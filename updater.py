@@ -68,7 +68,7 @@ def launch():
     global botproc
 
     botproc = subprocess.Popen(
-        [".venv/Scripts/python", "main.py"],
+        ["python", "main.py"],
         stdout = None,
         stderr = None
     )
@@ -100,7 +100,7 @@ if __name__ == "__main__":
 			setenv("BOT_VERSION", new_release)
 
 			print("\n", "Installation des dépendances...", "\n", sep = '', flush = True)
-			subprocess.Popen([".venv/Scripts/pip", "install", "-r", "requirments.txt"])
+			subprocess.Popen(["pip", "install", "-r", "requirments.txt"])
 
 			print("\n", "Redémarage en cours.", sep = '', end = '', flush = True)
 			stop()

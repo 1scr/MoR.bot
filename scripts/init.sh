@@ -1,7 +1,6 @@
-mkdir .local
-mkdir .local/games
-mkdir .local/config
-mkdir .local/cache
-mkdir .local/_map_cache
-
-python -m venv .venv
+mkdir -p .local
+mkdir -p .local/data
+mkdir -p .local/data/games
+mkdir -p .local/config
+mkdir -p .local/cache
+mkdir -p .local/_map_cache
