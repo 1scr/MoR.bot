@@ -99,12 +99,11 @@ if __name__ == "__main__":
 
 			setenv("BOT_VERSION", new_release)
 
-			print("\n", "Installation des dépendances...", "\n", sep = '', flush = True)
-			subprocess.Popen(["pip", "install", "-r", "requirements.txt"])
+			print("Installation des dépendances...", flush = True)
+			subprocess.Popen(["pip", "install", "-qqq", "--disable-pip-version-check", "-r", "requirements.txt"])
 
-			print("\n", "Redémarage en cours.", sep = '', end = '', flush = True)
+			print("Redémarage en cours.", flush = True)
 			stop()
-			print(".\n")
 			launch()
 		else:
 			print("L'application est à jour.", flush = True)
